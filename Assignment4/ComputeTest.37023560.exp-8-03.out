@@ -1,0 +1,186 @@
+running serial experiment 1 with N=256
+Total time: 0.019751 seconds
+Work time: 0.000288 seconds
+-----------------------------------------
+running serial experiment 2 with N=512
+Total time: 0.018553 seconds
+Work time: 0.001292 seconds
+-----------------------------------------
+running serial experiment 3 with N=1024
+Total time: 0.016133 seconds
+Work time: 0.004542 seconds
+-----------------------------------------
+running serial experiment 4 with N=2048
+Total time: 0.051721 seconds
+Work time: 0.017513 seconds
+-----------------------------------------
+running serial experiment 5 with N=4096
+Total time: 0.113427 seconds
+Work time: 0.069623 seconds
+-----------------------------------------
+running serial experiment 6 with N=8192
+Total time: 0.426733 seconds
+Work time: 0.278516 seconds
+-----------------------------------------
+running parallel experiment 1 with N=256 and P=1
+Total time: 0.089324 seconds
+Work time: 0.077432 seconds
+-----------------------------------------
+running parallel experiment 2 with N=256 and P=2
+Total time: 0.050972 seconds
+Work time: 0.039106 seconds
+-----------------------------------------
+running parallel experiment 3 with N=256 and P=4
+Total time: 0.048617 seconds
+Work time: 0.020226 seconds
+-----------------------------------------
+running parallel experiment 4 with N=256 and P=8
+Total time: 0.022507 seconds
+Work time: 0.010783 seconds
+-----------------------------------------
+running parallel experiment 5 with N=256 and P=16
+Total time: 0.018332 seconds
+Work time: 0.006231 seconds
+-----------------------------------------
+running parallel experiment 6 with N=256 and P=32
+Total time: 0.024251 seconds
+Work time: 0.004589 seconds
+-----------------------------------------
+running parallel experiment 7 with N=256 and P=64
+Total time: 0.015043 seconds
+Work time: 0.004333 seconds
+-----------------------------------------
+running parallel experiment 8 with N=256 and P=128
+Total time: 0.018013 seconds
+Work time: 0.006775 seconds
+-----------------------------------------
+running parallel experiment 9 with N=512 and P=1
+Total time: 0.770768 seconds
+Work time: 0.721670 seconds
+-----------------------------------------
+running parallel experiment 10 with N=512 and P=2
+Total time: 0.403781 seconds
+Work time: 0.361238 seconds
+-----------------------------------------
+running parallel experiment 11 with N=512 and P=4
+Total time: 0.227125 seconds
+Work time: 0.180645 seconds
+-----------------------------------------
+running parallel experiment 12 with N=512 and P=8
+Total time: 0.122213 seconds
+Work time: 0.091754 seconds
+-----------------------------------------
+running parallel experiment 13 with N=512 and P=16
+Total time: 0.084129 seconds
+Work time: 0.047322 seconds
+-----------------------------------------
+running parallel experiment 14 with N=512 and P=32
+Total time: 0.060366 seconds
+Work time: 0.026415 seconds
+-----------------------------------------
+running parallel experiment 15 with N=512 and P=64
+Total time: 0.041335 seconds
+Work time: 0.015721 seconds
+-----------------------------------------
+running parallel experiment 16 with N=512 and P=128
+Total time: 0.068758 seconds
+Work time: 0.014261 seconds
+-----------------------------------------
+running parallel experiment 17 with N=1024 and P=1
+Total time: 5.229812 seconds
+Work time: 5.170892 seconds
+-----------------------------------------
+running parallel experiment 18 with N=1024 and P=2
+Total time: 2.588313 seconds
+Work time: 2.540038 seconds
+-----------------------------------------
+running parallel experiment 19 with N=1024 and P=4
+Total time: 1.372205 seconds
+Work time: 1.299123 seconds
+-----------------------------------------
+running parallel experiment 20 with N=1024 and P=8
+Total time: 0.719212 seconds
+Work time: 0.656499 seconds
+-----------------------------------------
+running parallel experiment 21 with N=1024 and P=16
+Total time: 0.390017 seconds
+Work time: 0.328697 seconds
+-----------------------------------------
+running parallel experiment 22 with N=1024 and P=32
+Total time: 0.235299 seconds
+Work time: 0.170090 seconds
+-----------------------------------------
+running parallel experiment 23 with N=1024 and P=64
+Total time: 0.151542 seconds
+Work time: 0.090007 seconds
+-----------------------------------------
+running parallel experiment 24 with N=1024 and P=128
+Total time: 0.108020 seconds
+Work time: 0.060148 seconds
+-----------------------------------------
+running parallel experiment 25 with N=2048 and P=1
+Total time: 254.560502 seconds
+Work time: 254.427375 seconds
+-----------------------------------------
+running parallel experiment 26 with N=2048 and P=2
+Total time: 162.789504 seconds
+Work time: 162.645463 seconds
+-----------------------------------------
+running parallel experiment 27 with N=2048 and P=4
+Total time: 108.865978 seconds
+Work time: 108.723037 seconds
+-----------------------------------------
+running parallel experiment 28 with N=2048 and P=8
+Total time: 52.880586 seconds
+Work time: 52.743454 seconds
+-----------------------------------------
+running parallel experiment 29 with N=2048 and P=16
+Total time: 27.765512 seconds
+Work time: 27.633001 seconds
+-----------------------------------------
+running parallel experiment 30 with N=2048 and P=32
+Total time: 14.588216 seconds
+Work time: 14.450330 seconds
+-----------------------------------------
+running parallel experiment 31 with N=2048 and P=64
+Total time: 8.090496 seconds
+Work time: 7.948590 seconds
+-----------------------------------------
+running parallel experiment 32 with N=2048 and P=128
+Total time: 5.976995 seconds
+Work time: 5.836021 seconds
+-----------------------------------------
+running parallel experiment 33 with N=4096 and P=1
+Total time: 2023.986371 seconds
+Work time: 2023.536298 seconds
+-----------------------------------------
+running parallel experiment 34 with N=4096 and P=2
+Total time: 1496.698438 seconds
+Work time: 1496.217001 seconds
+-----------------------------------------
+running parallel experiment 35 with N=4096 and P=4
+Total time: 708.643728 seconds
+Work time: 708.253544 seconds
+-----------------------------------------
+running parallel experiment 36 with N=4096 and P=8
+Total time: 387.713609 seconds
+Work time: 387.150181 seconds
+-----------------------------------------
+running parallel experiment 37 with N=4096 and P=16
+Total time: 227.986262 seconds
+Work time: 227.520946 seconds
+-----------------------------------------
+running parallel experiment 38 with N=4096 and P=32
+Total time: 160.228427 seconds
+Work time: 159.800434 seconds
+-----------------------------------------
+running parallel experiment 39 with N=4096 and P=64
+Total time: 101.448176 seconds
+Work time: 101.027773 seconds
+-----------------------------------------
+running parallel experiment 40 with N=4096 and P=128
+Total time: 66.840425 seconds
+Work time: 66.434524 seconds
+-----------------------------------------
+running parallel experiment 41 with N=8192 and P=1
+slurmstepd: error: *** JOB 37023560 ON exp-8-03 CANCELLED AT 2025-02-16T15:48:48 DUE TO TIME LIMIT ***

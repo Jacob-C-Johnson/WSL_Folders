@@ -1,0 +1,25 @@
+i=0
+for ((x=1000; x<=4000; x+=1000));
+do
+    # run the job with some outputs
+    ((i++))
+    echo "running serial experiment $i"
+    ./make_matrix A $x $x 
+    ./make_matrix X $x 1
+
+    ./matrix_vector A X Y1
+    echo "-----------------------------------------"
+done
+
+i=0
+for ((x=1000; x<=4000; x+=1000));
+do
+    # run the job with some outputs
+    ((i++))
+    echo "running parallel experiment $i"
+    ./make_matrix A $x $x 
+    ./make_matrix X $x 1
+
+    ./pth_matrix_vector A X Y1 1
+    echo "-----------------------------------------"
+done

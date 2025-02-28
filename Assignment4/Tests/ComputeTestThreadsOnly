@@ -1,0 +1,148 @@
+Running serial experiment 1 with N=256
+Matrix A (256 x 256) and vector x (256 x 256) are incompatible for multiplication
+-----------------------------------------
+Running serial experiment 2 with N=512
+Matrix A (512 x 512) and vector x (512 x 512) are incompatible for multiplication
+-----------------------------------------
+Running serial experiment 3 with N=1024
+Matrix A (1024 x 1024) and vector x (1024 x 1024) are incompatible for multiplication
+-----------------------------------------
+Running serial experiment 4 with N=2048
+Matrix A (2048 x 2048) and vector x (2048 x 2048) are incompatible for multiplication
+-----------------------------------------
+Running serial experiment 5 with N=4096
+Matrix A (4096 x 4096) and vector x (4096 x 4096) are incompatible for multiplication
+-----------------------------------------
+Running serial experiment 6 with N=8192
+Matrix A (8192 x 8192) and vector x (8192 x 8192) are incompatible for multiplication
+-----------------------------------------
+Running parallel experiment 1 with N=256 and P=1
+Total time: 0.097425 seconds
+Work time: 0.075167 seconds
+-----------------------------------------
+Running parallel experiment 2 with N=256 and P=2
+Total time: 0.057598 seconds
+Work time: 0.038580 seconds
+-----------------------------------------
+Running parallel experiment 3 with N=256 and P=4
+Total time: 0.032433 seconds
+Work time: 0.020354 seconds
+-----------------------------------------
+Running parallel experiment 4 with N=256 and P=8
+Total time: 0.027283 seconds
+Work time: 0.009978 seconds
+-----------------------------------------
+Running parallel experiment 5 with N=256 and P=16
+Total time: 0.017248 seconds
+Work time: 0.006187 seconds
+-----------------------------------------
+Running parallel experiment 6 with N=256 and P=32
+Total time: 0.016618 seconds
+Work time: 0.005096 seconds
+-----------------------------------------
+Running parallel experiment 7 with N=256 and P=64
+Total time: 0.018001 seconds
+Work time: 0.004520 seconds
+-----------------------------------------
+Running parallel experiment 8 with N=256 and P=128
+Total time: 0.026711 seconds
+Work time: 0.006856 seconds
+-----------------------------------------
+Running parallel experiment 9 with N=512 and P=1
+Total time: 0.754918 seconds
+Work time: 0.705560 seconds
+-----------------------------------------
+Running parallel experiment 10 with N=512 and P=2
+Total time: 0.407835 seconds
+Work time: 0.360691 seconds
+-----------------------------------------
+Running parallel experiment 11 with N=512 and P=4
+Total time: 0.228964 seconds
+Work time: 0.177036 seconds
+-----------------------------------------
+Running parallel experiment 12 with N=512 and P=8
+Total time: 0.122406 seconds
+Work time: 0.091495 seconds
+-----------------------------------------
+Running parallel experiment 13 with N=512 and P=16
+Total time: 0.081944 seconds
+Work time: 0.047291 seconds
+-----------------------------------------
+Running parallel experiment 14 with N=512 and P=32
+Total time: 0.052367 seconds
+Work time: 0.026173 seconds
+-----------------------------------------
+Running parallel experiment 15 with N=512 and P=64
+Total time: 0.052096 seconds
+Work time: 0.016014 seconds
+-----------------------------------------
+Running parallel experiment 16 with N=512 and P=128
+Total time: 0.042742 seconds
+Work time: 0.014589 seconds
+-----------------------------------------
+Running parallel experiment 17 with N=1024 and P=1
+Total time: 5.205007 seconds
+Work time: 5.156669 seconds
+-----------------------------------------
+Running parallel experiment 18 with N=1024 and P=2
+Total time: 2.590712 seconds
+Work time: 2.535106 seconds
+-----------------------------------------
+Running parallel experiment 19 with N=1024 and P=4
+Total time: 1.357939 seconds
+Work time: 1.307012 seconds
+-----------------------------------------
+Running parallel experiment 20 with N=1024 and P=8
+Total time: 0.713312 seconds
+Work time: 0.652476 seconds
+-----------------------------------------
+Running parallel experiment 21 with N=1024 and P=16
+Total time: 0.391383 seconds
+Work time: 0.332482 seconds
+-----------------------------------------
+Running parallel experiment 22 with N=1024 and P=32
+Total time: 0.242037 seconds
+Work time: 0.169597 seconds
+-----------------------------------------
+Running parallel experiment 23 with N=1024 and P=64
+Total time: 0.142937 seconds
+Work time: 0.093985 seconds
+-----------------------------------------
+Running parallel experiment 24 with N=1024 and P=128
+Total time: 0.129150 seconds
+Work time: 0.068905 seconds
+-----------------------------------------
+Running parallel experiment 25 with N=2048 and P=1
+Total time: 309.280236 seconds
+Work time: 309.131841 seconds
+-----------------------------------------
+Running parallel experiment 26 with N=2048 and P=2
+Total time: 232.454350 seconds
+Work time: 232.302116 seconds
+-----------------------------------------
+Running parallel experiment 27 with N=2048 and P=4
+Total time: 123.456952 seconds
+Work time: 123.325598 seconds
+-----------------------------------------
+Running parallel experiment 28 with N=2048 and P=8
+Total time: 55.114368 seconds
+Work time: 54.964507 seconds
+-----------------------------------------
+Running parallel experiment 29 with N=2048 and P=16
+Total time: 28.287065 seconds
+Work time: 28.147691 seconds
+-----------------------------------------
+Running parallel experiment 30 with N=2048 and P=32
+Total time: 14.855429 seconds
+Work time: 14.691489 seconds
+-----------------------------------------
+Running parallel experiment 31 with N=2048 and P=64
+Total time: 8.298836 seconds
+Work time: 8.112781 seconds
+-----------------------------------------
+Running parallel experiment 32 with N=2048 and P=128
+Total time: 5.921474 seconds
+Work time: 5.772615 seconds
+-----------------------------------------
+Running parallel experiment 33 with N=4096 and P=1
+slurmstepd: error: *** JOB 36989574 ON exp-4-54 CANCELLED AT 2025-02-15T16:02:44 DUE TO TIME LIMIT ***
