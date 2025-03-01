@@ -8,23 +8,28 @@
 #SBATCH --mem=16GB
 #SBATCH --account=ccu108
 #SBATCH --export=ALL
-#SBATCH -t 00:30:00
+#SBATCH -t 08:00:00
 
 module purge
 module load cpu
 module load slurm
 module load gcc/10.2.0
 
+# Create CSV file and add headers
+echo "Experiment,Type,N,P,TotalTime,WorkTime" > results.csv
+
 # Serial experiments
 i=0
-for N in 10000 20000 30000 40000; do
-    # run the job with some outputs
+for N in 256 512 1024 2048 4096 8192; do
     ((i++))
     echo "running serial experiment $i with N=$N"
     ./make_matrix A $N $N 
-    ./make_matrix X $N 1
+    ./make_matrix X $N $N
 
-    ./matrix_vector A X Y1
+    output=$(./matrix_matrix A X Y1)
+    total_time=$(echo "$output" | grep "Total time" | awk '{print $3}')
+    work_time=$(echo "$output" | grep "Work time" | awk '{print $3}')
+    echo "$i,Serial,$N,1,$total_time,$work_time" >> results.csv
     echo "-----------------------------------------"
 done
 
@@ -32,17 +37,18 @@ done
 i=0
 for N in 256 512 1024 2048 4096 8192; do
     for P in 1 2 4 8 16 32 64 128; do
-        # run the job with some outputs
         ((i++))
         echo "running parallel experiment $i with N=$N and P=$P"
         ./make_matrix A $N $N 
         ./make_matrix X $N $N
 
-        ./pth_matrix_vector A X Y1 $P
+        output=$(./omp_matrix_matrix A X Y1 $P)
+        total_time=$(echo "$output" | grep "Total time" | awk '{print $3}')
+        work_time=$(echo "$output" | grep "Work time" | awk '{print $3}')
+        echo "$i,Parallel,$N,$P,$total_time,$work_time" >> results.csv
         echo "-----------------------------------------"
     done
 done
-
 
 # A bash script to run your experiments on the HPC
 # This script provides an output file name

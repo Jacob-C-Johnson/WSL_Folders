@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -pthread
+CFLAGS = -Wall -g -pthread -fopenmp
 TARGETS = make_matrix print_matrix matrix_matrix omp_matrix_matrix
 
 # Object files for each target

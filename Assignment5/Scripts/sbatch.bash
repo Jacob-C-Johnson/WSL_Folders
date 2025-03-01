@@ -29,7 +29,7 @@ for N in 256 512 1024 2048 4096 8192; do
     ./make_matrix A $N $N 
     ./make_matrix X $N $N
 
-    ./matrix_vector A X Y1
+    ./matrix_matrix A X Y1
     echo "-----------------------------------------"
 done
 
@@ -43,7 +43,7 @@ for N in 256 512 1024 2048 4096 8192; do
         ./make_matrix A $N $N 
         ./make_matrix X $N $N
 
-        ./pth_matrix_vector A X Y1 $P
+        ./omp_matrix_matrix A X Y1 $P
         echo "-----------------------------------------"
     done
 done

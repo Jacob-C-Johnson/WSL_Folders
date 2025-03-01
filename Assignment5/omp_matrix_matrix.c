@@ -1,5 +1,5 @@
 /*
- * pth_matrix_vector.c - Parallel matrix-vector multiplication using pthreads
+ * omp_matrix_matrix.c - Parallel matrix-matrix multiplication using OpenMP
  *
  * Author: Jacob Johnson
  * Date: 02/08/2025
@@ -10,7 +10,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+#include <omp.h>
 #include "timer.h"
 #include "omp_matrix_matrix.h"
 
@@ -24,11 +24,9 @@ double start, finish;
 double workStart, workFinish;
 double runTime, workTime;
 
-void *pth_mat_vect(void *rank);
-
 int main(int argc, char *argv[]) {
     if (argc != 5) {
-        printf("Usage: ./pth_matrix_vector <file A> <file X> <file Y> <threads>\n");
+        printf("Usage: ./omp_matrix_matrix <file A> <file X> <file Y> <threads>\n");
         exit(1);
     }
 
@@ -61,7 +59,6 @@ int main(int argc, char *argv[]) {
     x = malloc(rows_x * cols_x * sizeof(double));
     y = malloc(m * p * sizeof(double));  // Instead of m * sizeof(double)
 
-
     if (A == NULL || x == NULL || y == NULL) {
         fprintf(stderr, "Memory allocation error\n");
         exit(EXIT_FAILURE);
@@ -71,17 +68,19 @@ int main(int argc, char *argv[]) {
     Read_matrix_data(fileA, A, m, n);
     Read_matrix_data(fileX, x, rows_x, cols_x);
 
-    pthread_t *thread_handles = malloc(thread_count * sizeof(pthread_t));
+    // Set the number of threads
+    omp_set_num_threads(thread_count);
 
-    // Create threads
+    // Parallel matrix-matrix multiplication
     GET_TIME(workStart); // Start work timer
-    for (long thread = 0; thread < thread_count; thread++) {
-        pthread_create(&thread_handles[thread], NULL, pth_mat_vect, (void *)thread);
-    }
-
-    // Join threads
-    for (long thread = 0; thread < thread_count; thread++) {
-        pthread_join(thread_handles[thread], NULL);
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < p; j++) {
+            y[i * p + j] = 0.0;  // Initialize result cell
+            for (int k = 0; k < n; k++) {  // Compute dot product
+                y[i * p + j] += A[i * n + k] * x[k * p + j];
+            }
+        }
     }
     GET_TIME(workFinish); // End work timer
 
@@ -101,10 +100,6 @@ int main(int argc, char *argv[]) {
         free(y);
         y = NULL;
     }
-    if (thread_handles != NULL) {
-        free(thread_handles);
-        thread_handles = NULL;
-    }
 
     GET_TIME(finish);
 
@@ -116,24 +111,6 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-
-void* pth_mat_vect(void* rank) {
-    long my_rank = (long) rank;
-    int my_first_row = BLOCK_LOW(my_rank, thread_count, m);
-    int my_last_row = BLOCK_HIGH(my_rank, thread_count, m);
-
-    for (int i = my_first_row; i <= my_last_row; i++) {
-        for (int j = 0; j < p; j++) {  // Loop over columns of X (same as Y)
-            y[i * p + j] = 0.0;  // Initialize result cell
-            for (int k = 0; k < n; k++) {  // Compute dot product
-                y[i * p + j] += A[i * n + k] * x[k * p + j];
-            }
-        }
-    }
-    return NULL;
-}
-
 
 void Read_matrix_dimensions(const char* file_name, int* rows, int* cols) {
     FILE* file = fopen(file_name, "rb");
