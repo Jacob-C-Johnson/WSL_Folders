@@ -85,48 +85,50 @@ void global_sumA(double* result, int rank, int size, double my_value) {
 
 // Global Sum Version B: Tree-based Reduction
 void global_sumB(double* result, int rank, int size, double my_value) {
-    //iterator to count the phase
-    int iter = 0;
+    double local_value = my_value;
+    double recv_value;
 
-    //verfies that np is a power of 2 
-    if ((size & (size-1)) != 0) {
-		fprintf(stderr, "ERROR: SIZE IS NOT A POWER OF 2. \n");
-        exit(1);
-	};
+    // Start timing
+    double start_time = MPI_Wtime();
 
-    //creates a mask, checks that mask is less than size and then shifts the mask each time the loop executes
-    for(int mask = 1; mask < size; mask = mask << 1){
-        double my_value_2;
-        //gets the new_rank by applying the mask to the current rank
-        int new_rank = rank ^ mask;
+    // Reduction Phase: Compute the global sum
+    for (int mask = 1; mask < size; mask <<= 1) {
+        int partner = rank ^ mask;
 
-        //determins which processor should be sending and recieving based on a bitwise and operation bewteen the rank and mask and checking if that is zero
-        if((rank & mask) == 0){
-            MPI_Ssend(&my_value, 1, MPI_DOUBLE, new_rank, 1, MPI_COMM_WORLD);
-            MPI_Recv(&my_value_2, 1, MPI_DOUBLE, new_rank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        if ((rank & mask) == 0) {
+            // Processes with rank & mask == 0 receive and add values
+            if (partner < size) {
+                MPI_Recv(&recv_value, 1, MPI_DOUBLE, partner, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                local_value += recv_value;
+            }
+        } else {
+            // Processes with rank & mask != 0 send their values and exit the loop
+            MPI_Ssend(&local_value, 1, MPI_DOUBLE, partner, 0, MPI_COMM_WORLD);
+            break;
         }
-        else{
-            MPI_Recv(&my_value_2, 1, MPI_DOUBLE, new_rank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            MPI_Ssend(&my_value, 1, MPI_DOUBLE, new_rank, 1, MPI_COMM_WORLD);
-        }
-
-        //calls the int_to_binary and passes it the np and the ranks that need to be convered to binary strings
-        char *rank_b = int_to_binary(rank, size);
-        char *new_rank_b = int_to_binary(new_rank, size);
-
-        //formated print statements
-        //printf(" Phase %d - P %d (%s) receiving from P %d (%s), val %.1f \n", iter, rank, rank_b, new_rank, new_rank_b, my_value_2);
-        //printf(" Phase %d - P %d (%s) sending   to   P %d (%s), val %.1f \n", iter, rank, rank_b, new_rank, new_rank_b, my_value);
-        
-        //does the actual addition to work towards computing the global sum
-        my_value = my_value + my_value_2;
-        iter ++;
-        
-        //frees the memory that was allocated in int_to_binary() for the rank char strings that were returned.
-        free(rank_b);
-        free(new_rank_b);
     }
 
-    //returns the sum as result
-    *result = my_value;
+    // Propagation Phase: Broadcast the global sum back to all processes
+    for (int mask = size >> 1; mask > 0; mask >>= 1) {
+        int partner = rank ^ mask;
+
+        if ((rank & mask) == 0) {
+            // Processes with rank & mask == 0 send the global sum to their partners
+            if (partner < size) {
+                MPI_Ssend(&local_value, 1, MPI_DOUBLE, partner, 1, MPI_COMM_WORLD);
+            }
+        } else {
+            // Processes with rank & mask != 0 receive the global sum
+            MPI_Recv(&local_value, 1, MPI_DOUBLE, partner, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    }
+
+    // Store the global sum in the result
+    *result = local_value;
+
+    // End timing
+    double end_time = MPI_Wtime();
+
+    // Print timing information
+    printf("Process %d: Time taken for global_sumB = %f seconds\n", rank, end_time - start_time);
 }
