@@ -1,0 +1,9 @@
+Running MPI with 4 processes
+FINAL IN MAIN: Process: A 1 has Sum = 6.000000 with time = 0.000111 
+FINAL IN MAIN: Process: B 1 has Sum = 6.000000 with time = 0.000047 
+FINAL IN MAIN: Process: A 2 has Sum = 6.000000 with time = 0.000326 
+FINAL IN MAIN: Process: B 2 has Sum = 6.000000 with time = 0.000027 
+FINAL IN MAIN: Process: A 3 has Sum = 6.000000 with time = 0.000402 
+FINAL IN MAIN: Process: B 3 has Sum = 6.000000 with time = 0.000020 
+FINAL IN MAIN: Process: A 0 has Sum = 6.000000 with time = 0.000323 
+FINAL IN MAIN: Process: B 0 has Sum = 6.000000 with time = 0.000021 

@@ -1,0 +1,5 @@
+Running MPI with 2 processes
+FINAL IN MAIN: Process: A 0 has Sum = 1.000000 with time = 0.000436 
+FINAL IN MAIN: Process: B 0 has Sum = 1.000000 with time = 0.000004 
+FINAL IN MAIN: Process: A 1 has Sum = 1.000000 with time = 0.000420 
+FINAL IN MAIN: Process: B 1 has Sum = 1.000000 with time = 0.000004 

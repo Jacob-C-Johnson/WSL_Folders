@@ -1,0 +1,17 @@
+Running MPI with 8 processes
+FINAL IN MAIN: Process: A 1 has Sum = 28.000000 with time = 0.019712 
+FINAL IN MAIN: Process: B 1 has Sum = 28.000000 with time = 0.010551 
+FINAL IN MAIN: Process: A 2 has Sum = 28.000000 with time = 0.019991 
+FINAL IN MAIN: Process: B 2 has Sum = 28.000000 with time = 0.010537 
+FINAL IN MAIN: Process: A 3 has Sum = 28.000000 with time = 0.019569 
+FINAL IN MAIN: Process: B 3 has Sum = 28.000000 with time = 0.010518 
+FINAL IN MAIN: Process: A 0 has Sum = 28.000000 with time = 0.020858 
+FINAL IN MAIN: Process: B 0 has Sum = 28.000000 with time = 0.009349 
+FINAL IN MAIN: Process: A 4 has Sum = 28.000000 with time = 0.020998 
+FINAL IN MAIN: Process: B 4 has Sum = 28.000000 with time = 0.009294 
+FINAL IN MAIN: Process: A 5 has Sum = 28.000000 with time = 0.021140 
+FINAL IN MAIN: Process: B 5 has Sum = 28.000000 with time = 0.009267 
+FINAL IN MAIN: Process: A 6 has Sum = 28.000000 with time = 0.021038 
+FINAL IN MAIN: Process: B 6 has Sum = 28.000000 with time = 0.009249 
+FINAL IN MAIN: Process: A 7 has Sum = 28.000000 with time = 0.021084 
+FINAL IN MAIN: Process: B 7 has Sum = 28.000000 with time = 0.009234 
