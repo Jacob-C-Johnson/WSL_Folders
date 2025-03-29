@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     global_sumB(&result_b, rank, size, my_value, &time_b);
 
     // Print results
-    printf("FINAL IN MAIN: Process: %d has Sum = %f with time = %f \n", rank, result_a, time_a);
-    printf("FINAL IN MAIN: Process: %d has Sum = %f with time = %f \n", rank, result_b, time_b);
+    printf("FINAL IN MAIN: Process: A %d has Sum = %f with time = %f \n", rank, result_a, time_a);
+    printf("FINAL IN MAIN: Process: B %d has Sum = %f with time = %f \n", rank, result_b, time_b);
 
     // Finalize MPI
     MPI_Finalize();
