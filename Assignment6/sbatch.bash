@@ -26,4 +26,4 @@ P=$SLURM_NTASKS
 echo "Running MPI with $P processes"
 
 # Run the MPI program
-mpirun -np $P ./gsum
+mpiexec -n $P ./gsum
