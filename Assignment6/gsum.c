@@ -6,6 +6,7 @@
 int main(int argc, char** argv) {
     int rank, size;
     double my_value, result_a, result_b;
+    double time_a, time_b; // Variables to store timing information
 
     // Initialize MPI
     MPI_Init(&argc, &argv);
@@ -25,15 +26,14 @@ int main(int argc, char** argv) {
     my_value = (double)rank;
 
     // Compute global sum using Version A
-    global_sumA(&result_a, rank, size, my_value);
+    global_sumA(&result_a, rank, size, my_value, &time_a);
 
     // Compute global sum using Version B
-    global_sumB(&result_b, rank, size, my_value);
+    global_sumB(&result_b, rank, size, my_value, &time_b);
 
     // Print results
-    printf("FINAL IN MAIN: Process: %d has Sum = %f with time = %f \n", rank, result_a, MPI_Wtime());
-    printf("FINAL IN MAIN: Process: %d has Sum = %f with time = %f \n", rank, result_b, MPI_Wtime());
-
+    printf("FINAL IN MAIN: Process: %d has Sum = %f with time = %f \n", rank, result_a, time_a);
+    printf("FINAL IN MAIN: Process: %d has Sum = %f with time = %f \n", rank, result_b, time_b);
 
     // Finalize MPI
     MPI_Finalize();

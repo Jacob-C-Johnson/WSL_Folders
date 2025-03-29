@@ -16,8 +16,8 @@
  #include <mpi.h>
  
  // Function prototypes for global sum implementations
- void global_sumA(double* result, int rank, int size, double my_value);
- void global_sumB(double* result, int rank, int size, double my_value);
+ void global_sumA(double* result, int rank, int size, double my_value, double* time_a);
+ void global_sumB(double* result, int rank, int size, double my_value, double* time_b);
 
  
  // Helper function to check if number of processes is a power of 2

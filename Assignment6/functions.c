@@ -50,7 +50,7 @@ char *int_to_binary(int n, int size) {
 
 
 // Global Sum Version A: SPMD Reduction
-void global_sumA(double* result, int rank, int size, double my_value) {
+void global_sumA(double* result, int rank, int size, double my_value, double* time_taken) {
     double local_value = my_value;
     double recv_value;
     int i;
@@ -78,13 +78,11 @@ void global_sumA(double* result, int rank, int size, double my_value) {
 
     // End timing
     double end_time = MPI_Wtime();
-
-    // Print timing information
-    printf("Process %d: Time taken for global_sumA = %f seconds\n", rank, end_time - start_time);
+    *time_taken = end_time - start_time; // Store the time taken
 }
 
 // Global Sum Version B: Tree-based Reduction
-void global_sumB(double* result, int rank, int size, double my_value) {
+void global_sumB(double* result, int rank, int size, double my_value, double* time_taken) {
     double local_value = my_value;
     double recv_value;
 
@@ -128,7 +126,5 @@ void global_sumB(double* result, int rank, int size, double my_value) {
 
     // End timing
     double end_time = MPI_Wtime();
-
-    // Print timing information
-    printf("Process %d: Time taken for global_sumB = %f seconds\n", rank, end_time - start_time);
+    *time_taken = end_time - start_time; // Store the time taken
 }
