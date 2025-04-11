@@ -57,6 +57,17 @@ void Print_matrix(const char *file_name){
     fclose(file);
 }
 
+void print_matrix_from_mem(double *matrix, int rows, int cols, int iteration) {
+    printf("Matrix at iteration %d:\n", iteration);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%05.2f ", matrix[i * cols + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 
 //stensil-2d.c utilities
 double stencil(int r, int cols, int c, double *matrix) {  // current row, amt of colums, current column, matrix

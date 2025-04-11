@@ -4,6 +4,7 @@ void make_matrix(const char *file_name, int rows, int cols);
 
 // print matrix utilities
 void Print_matrix(const char *file_name);
+void print_matrix_from_mem(double *matrix, int rows, int cols, int iteration);
 
 // stencil-2d utilities
 double stencil(int r, int cols, int c, double *matrix);

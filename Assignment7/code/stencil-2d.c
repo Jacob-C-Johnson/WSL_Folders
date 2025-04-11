@@ -4,18 +4,6 @@
 #include <sys/stat.h>  // Add this for mkdir
 #include "utilities.h"
 
-// Function to print matrix for debugging
-void print_matrix(double *matrix, int rows, int cols, int iteration) {
-    printf("Matrix at iteration %d:\n", iteration);
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            printf("%05.2f ", matrix[i * cols + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
 int main(int argc, char *argv[]) {
     // Parse command line arguments
     if (argc < 4 || argc > 5) {
@@ -78,7 +66,7 @@ int main(int argc, char *argv[]) {
     // Print initial state if verbosity is high
     if (verbosity >= 2) {
         printf("Initial state:\n");
-        print_matrix(matrix_a, rows, cols, 0);
+        print_matrix_from_mem(matrix_a, rows, cols, 0);
     }
     
     // Perform iterations
@@ -102,7 +90,7 @@ int main(int argc, char *argv[]) {
         // Print state after iteration if verbosity is high
         if (verbosity >= 2) {
             printf("State after iteration %d:\n", iter);
-            print_matrix(output, rows, cols, iter);
+            print_matrix_from_mem(output, rows, cols, iter);
         }
     }
     
