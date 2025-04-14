@@ -2,8 +2,8 @@
 CC = gcc
 CFLAGS = -Wall -g 
 LDFLAGS = -lm
-TARGETS = make-2d print-2d stencil-2d stencil-2d-pth
-OBJS = make-2d.o print-2d.o stencil-2d.o stencil-2d-pth.o utilities.o
+TARGETS = make-2d print-2d stencil-2d stencil-2d-pth stencil-2d-omp
+OBJS = make-2d.o print-2d.o stencil-2d.o stencil-2d-pth.o stencil-2d-omp.o utilities.o
 
 all: $(TARGETS)
 
@@ -18,6 +18,9 @@ stencil-2d: stencil-2d.o utilities.o
 
 stencil-2d-pth: stencil-2d-pth.o utilities.o
 	$(CC) $(CFLAGS) -pthread -o $@ $^ $(LDFLAGS)
+
+stencil-2d-omp: stencil-2d-omp.o utilities.o
+	$(CC) $(CFLAGS) -fopenmp -o $@ $^ $(LDFLAGS)
 
 
 %.o: %.c utilities.h

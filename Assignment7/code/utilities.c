@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <omp.h>
 #include "utilities.h"
 
 // print-2d.c utilities
@@ -70,14 +71,6 @@ void print_matrix_from_mem(double *matrix, int rows, int cols, int iteration) {
 
 
 //stensil-2d.c utilities
-double stencil(int r, int cols, int c, double *matrix) {  // current row, amt of colums, current column, matrix
-    int i = r * cols + c;                                 // current index
-    double sum = matrix[i - cols - 1] + matrix[i - cols] + matrix[i - cols + 1] +
-                 matrix[i + 1] + matrix[i + cols + 1] + matrix[i + cols] +
-                 matrix[i + cols - 1] + matrix[i - 1] + matrix[i];  // needs to add in order NW+N+NE+E+SE+S+SW+W+C
-    return sum / 9.0;
-}
-
 void apply_stencil(double *input, double *output, int rows, int cols) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -106,6 +99,37 @@ void apply_stencil(double *input, double *output, int rows, int cols) {
     }
 }
 
+// stencil-2d-omp.c utilities
+void omp_apply_stencil(double *input, double *output, int rows, int cols){
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int index = i * cols + j;
+            
+            // Don't update boundary cells
+            if (i == 0 || i == rows - 1 || j == 0 || j == cols - 1) {
+                output[index] = input[index];
+                continue;
+            }
+            
+            // 9-point stencil in the required order: NW+N+NE+E+SE+S+SW+W+C
+            double NW = input[(i-1) * cols + (j-1)];  // Northwest
+            double N  = input[(i-1) * cols + j];      // North
+            double NE = input[(i-1) * cols + (j+1)];  // Northeast
+            double E  = input[i * cols + (j+1)];      // East
+            double SE = input[(i+1) * cols + (j+1)];  // Southeast
+            double S  = input[(i+1) * cols + j];      // South
+            double SW = input[(i+1) * cols + (j-1)];  // Southwest
+            double W  = input[i * cols + (j-1)];      // West
+            double C  = input[i * cols + j];          // Center
+            
+            // Calculate the average using the specified order
+            output[index] = (NW + N + NE + E + SE + S + SW + W + C) / 9.0;
+        }
+    }
+}
+
+// heatmap functions
 void save_frame(double *matrix, int rows, int cols, int iteration, const char *output_dir) {
     char frame_filename[256];
     sprintf(frame_filename, "%s/frame%d", output_dir, iteration);
