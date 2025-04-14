@@ -126,3 +126,32 @@ int main(int argc, char *argv[]) {
     
     return 0;
 }
+
+void omp_apply_stencil(double *input, double *output, int rows, int cols){
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int index = i * cols + j;
+            
+            // Don't update boundary cells
+            if (i == 0 || i == rows - 1 || j == 0 || j == cols - 1) {
+                output[index] = input[index];
+                continue;
+            }
+            
+            // 9-point stencil in the required order: NW+N+NE+E+SE+S+SW+W+C
+            double NW = input[(i-1) * cols + (j-1)];  // Northwest
+            double N  = input[(i-1) * cols + j];      // North
+            double NE = input[(i-1) * cols + (j+1)];  // Northeast
+            double E  = input[i * cols + (j+1)];      // East
+            double SE = input[(i+1) * cols + (j+1)];  // Southeast
+            double S  = input[(i+1) * cols + j];      // South
+            double SW = input[(i+1) * cols + (j-1)];  // Southwest
+            double W  = input[i * cols + (j-1)];      // West
+            double C  = input[i * cols + j];          // Center
+            
+            // Calculate the average using the specified order
+            output[index] = (NW + N + NE + E + SE + S + SW + W + C) / 9.0;
+        }
+    }
+}

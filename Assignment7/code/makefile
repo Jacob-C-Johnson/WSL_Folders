@@ -1,6 +1,6 @@
 # Makefile for Assignment7
 CC = gcc
-CFLAGS = -Wall -g 
+CFLAGS = -Wall -g -pthread -fopenmp
 LDFLAGS = -lm
 TARGETS = make-2d print-2d stencil-2d stencil-2d-pth stencil-2d-omp
 OBJS = make-2d.o print-2d.o stencil-2d.o stencil-2d-pth.o stencil-2d-omp.o utilities.o
