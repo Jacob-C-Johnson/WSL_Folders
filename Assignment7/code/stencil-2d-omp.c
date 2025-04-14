@@ -85,8 +85,10 @@ int main(int argc, char *argv[]) {
         // Apply stencil (heat transfer calculation)
         omp_apply_stencil(input, output, rows, cols);
         
-        // Save every frame 
-        save_frame(output, rows, cols, iter, frames_dir);
+        // Save frame with improved error checking
+        if (save_frame(output, rows, cols, iter, frames_dir) != 0 && verbosity >= 1) {
+            printf("Warning: Could not save frame %d\n", iter);
+        }
         
         // Print state after iteration if verbosity is high
         if (verbosity >= 2) {

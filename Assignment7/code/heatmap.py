@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import imageio
 import re
+import time
 
 def read_matrix(filename):
     with open(filename, "rb") as f:
@@ -31,23 +32,44 @@ def make_gif(image_files, out_path):
     imageio.mimsave(out_path, frames, duration=0.3)
 
 def main():
-    input_folder = "frames"
-    output_folder = "heatmaps"
+    # Use absolute path to make sure we're looking in the right place
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    input_folder = os.path.join(script_dir, "frames")
+    output_folder = os.path.join(script_dir, "heatmaps")
+    
+    print(f"Looking for frames in: {input_folder}")
     os.makedirs(output_folder, exist_ok=True)
+    
+    # Clear any existing heatmaps to ensure we don't mix old and new
+    for old_heatmap in glob.glob(os.path.join(output_folder, "heatmap_*.png")):
+        os.remove(old_heatmap)
+    
+    # Check if frames folder exists
+    if not os.path.exists(input_folder):
+        print(f"Error: Frames folder '{input_folder}' does not exist.")
+        print("Make sure you've run the stencil program to generate frames first.")
+        return
 
+    # Get list of frames
     binary_files = sorted(
         glob.glob(os.path.join(input_folder, "frame*")),
         key=extract_frame_number
     )
-
+    
+    if not binary_files:
+        print(f"No frame files found in {input_folder}.")
+        return
+    
+    print(f"Found {len(binary_files)} frame files.")
     image_files = []
 
     for idx, file in enumerate(binary_files):
+        print(f"Processing frame {idx}: {os.path.basename(file)}")
         matrix = read_matrix(file)
         img_file = save_heatmap(matrix, idx, output_folder)
         image_files.append(img_file)
 
-    make_gif(image_files, "matrix_animation.gif")
+    make_gif(image_files, os.path.join(script_dir, "matrix_animation.gif"))
     print("GIF saved as matrix_animation.gif 🎉")
 
 if __name__ == "__main__":

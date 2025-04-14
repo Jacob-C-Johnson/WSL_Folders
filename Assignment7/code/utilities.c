@@ -99,20 +99,38 @@ void apply_stencil(double *input, double *output, int rows, int cols) {
 }
 
 // heatmap functions
-void save_frame(double *matrix, int rows, int cols, int iteration, const char *output_dir) {
-    char frame_filename[256];
-    sprintf(frame_filename, "%s/frame%d", output_dir, iteration);
+int save_frame(double *matrix, int rows, int cols, int frame, const char *output_dir) {
+    char filename[256];
+    sprintf(filename, "%s/frame%d", output_dir, frame);
     
-    FILE *frame_file = fopen(frame_filename, "wb");
-    if (frame_file == NULL) {
-        perror("Error opening frame file");
-        return;
+    FILE *file = fopen(filename, "wb");
+    if (file == NULL) {
+        fprintf(stderr, "Error: Could not open file %s for writing\n", filename);
+        return 1; // Return error code
     }
     
-    // Write dimensions and data
-    fwrite(&rows, sizeof(int), 1, frame_file);
-    fwrite(&cols, sizeof(int), 1, frame_file);
-    fwrite(matrix, sizeof(double), rows * cols, frame_file);
+    // Write dimensions and matrix data
+    if (fwrite(&rows, sizeof(int), 1, file) != 1) {
+        fprintf(stderr, "Error writing rows to file %s\n", filename);
+        fclose(file);
+        return 2;
+    }
     
-    fclose(frame_file);
+    if (fwrite(&cols, sizeof(int), 1, file) != 1) {
+        fprintf(stderr, "Error writing cols to file %s\n", filename);
+        fclose(file);
+        return 3;
+    }
+    
+    if (fwrite(matrix, sizeof(double), rows * cols, file) != rows * cols) {
+        fprintf(stderr, "Error writing matrix data to file %s\n", filename);
+        fclose(file);
+        return 4;
+    }
+    
+    // Ensure data is written to disk
+    fflush(file);
+    fclose(file);
+    
+    return 0; // Success
 }
