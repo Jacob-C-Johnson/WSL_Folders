@@ -8,17 +8,24 @@
 
 int main(int argc, char *argv[]) {
     // Parse command line arguments
-    if (argc < 4 || argc > 5) {
-        fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> <verbosity> <number of processors>\n", argv[0]);
+    if (argc != 6) {
+        fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> <verbosity> <num_processors>\n", argv[0]);
         return 1;
     }
 
     int num_iterations = atoi(argv[1]);
     char *input_file = argv[2];
     char *output_file = argv[3];
-    int verbosity = argv[4];
+    int verbosity = atoi(argv[4]);
     int num_processors = atoi(argv[5]);
 
+    // Check if required arguments are provided
+    if (num_iterations <= 0 || input_file == NULL || output_file == NULL) {
+        fprintf(stderr, "Error: Required arguments missing or invalid.\n");
+        fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> <verbosity> <num_processors>\n", argv[0]);
+        return 1;
+    }
+    
     omp_set_num_threads(num_processors); // Set the number of threads for OpenMP
 
     // Initialize timing variables
