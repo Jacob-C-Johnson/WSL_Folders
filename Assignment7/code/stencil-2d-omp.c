@@ -4,18 +4,28 @@
 #include <sys/stat.h>  // Add this for mkdir
 #include <omp.h> // OpenMP header
 #include "utilities.h"
+#include "timer.h"
 
 int main(int argc, char *argv[]) {
     // Parse command line arguments
     if (argc < 4 || argc > 5) {
-        fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> [verbosity]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> <verbosity> <number of processors>\n", argv[0]);
         return 1;
     }
 
     int num_iterations = atoi(argv[1]);
     char *input_file = argv[2];
     char *output_file = argv[3];
-    int verbosity = (argc > 4) ? atoi(argv[4]) : 0;  // Default verbosity 0 if not specified
+    int verbosity = argv[4];
+    int num_processors = atoi(argv[5]);
+
+    omp_set_num_threads(num_processors); // Set the number of threads for OpenMP
+
+    // Initialize timing variables
+    double overall_start, overall_end, work_start, work_end, runTime, workTime;
+
+    // Start overall timer
+    GET_TIME(overall_start);
 
     // Check if required arguments are provided
     if (num_iterations <= 0 || input_file == NULL || output_file == NULL) {
@@ -70,6 +80,9 @@ int main(int argc, char *argv[]) {
         print_matrix_from_mem(matrix_a, rows, cols, 0);
     }
     
+    // Start work timer
+    GET_TIME(work_start);
+
     // Perform iterations
     double *input, *output;
     for (int iter = 1; iter <= num_iterations; iter++) {
@@ -97,6 +110,10 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    // End work timer
+    GET_TIME(work_end);
+    
+
     // Final result is in the output of the last iteration
     double *result = (num_iterations % 2 == 1) ? matrix_b : matrix_a;
     
@@ -125,6 +142,15 @@ int main(int argc, char *argv[]) {
     // Clean up
     free(matrix_a);
     free(matrix_b);
+
+    // End overall timer
+    GET_TIME(overall_end);
+
+    runTime = work_end - work_start;
+    printf("Total time: %lf seconds\n", runTime);
+
+    workTime = overall_end - overall_start;
+    printf("Work time: %lf seconds\n", workTime);
     
     return 0;
 }

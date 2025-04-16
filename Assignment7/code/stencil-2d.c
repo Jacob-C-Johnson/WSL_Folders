@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>  // Add this for mkdir
 #include "utilities.h"
+#include "timer.h"
 
 int main(int argc, char *argv[]) {
     // Parse command line arguments
@@ -22,6 +23,12 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <num iters> <in> <out> <debug>\n", argv[0]);
         return 1;
     }
+    
+    // Initialize timing variables
+    double overall_start, overall_end, work_start, work_end, runTime, workTime;
+
+    // Start overall timer
+    GET_TIME(overall_start);
     
     // Read input matrix
     FILE *file = fopen(input_file, "rb");
@@ -68,6 +75,9 @@ int main(int argc, char *argv[]) {
         printf("Initial state:\n");
         print_matrix_from_mem(matrix_a, rows, cols, 0);
     }
+
+    // Start work timer
+    GET_TIME(work_start);
     
     // Perform iterations
     double *input, *output;
@@ -96,6 +106,9 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    // End work timer
+    GET_TIME(work_end);
+
     // Final result is in the output of the last iteration
     double *result = (num_iterations % 2 == 1) ? matrix_b : matrix_a;
     
@@ -124,6 +137,15 @@ int main(int argc, char *argv[]) {
     // Clean up
     free(matrix_a);
     free(matrix_b);
+
+    // End overall timer
+    GET_TIME(overall_end);
+
+    runTime = work_end - work_start;
+    printf("Total time: %lf seconds\n", runTime);
+
+    workTime = overall_end - overall_start;
+    printf("Work time: %lf seconds\n", workTime);
     
     return 0;
 }
