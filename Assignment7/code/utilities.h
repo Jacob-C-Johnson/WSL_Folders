@@ -12,3 +12,8 @@ int save_frame(double *matrix, int rows, int cols, int iteration, const char *ou
 
 // Function prototype for omp_apply_stencil
 void omp_apply_stencil(double *input, double *output, int rows, int cols);
+
+// pthreads utilities
+void pth_apply_stencil(double *input, double *output, int rows, int cols); // Function prototype for pth_apply_stencil
+#define BLOCK_LOW(id,p,n) ((id)*(n)/(p)) // given rank = id, give p = # processes (or threads), and given n, number of elements in 1 dimension, it will tell you the starting index
+#define BLOCK_HIGH(id,p,n) (BLOCK_LOW((id)+1,p,n)-1) // given rank = id, give p = # processes (or threads), and given n, number of elements in 1 dimension, it will tell you the ending index
