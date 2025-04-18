@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "pth_matrix_vector.h": "c"
+        "pth_matrix_vector.h": "c",
+        "utilities.h": "c"
     }
 }
