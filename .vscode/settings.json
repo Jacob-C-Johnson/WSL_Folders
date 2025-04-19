@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "pth_matrix_vector.h": "c",
-        "utilities.h": "c"
+        "utilities.h": "c",
+        "array": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp"
     }
 }

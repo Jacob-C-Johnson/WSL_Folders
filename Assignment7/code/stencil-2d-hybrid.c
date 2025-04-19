@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>  // Add this for mkdir
 #include <mpi.h> // Include MPI header
+#include <omp.h> // Include OpenMP header
 #include "utilities.h"
 #include "timer.h"
 
@@ -37,6 +38,8 @@ int main(int argc, char *argv[]) {
         MPI_Finalize();
         return 1;
     }
+
+    omp_set_num_threads(num_processors); // Set the number of threads for OpenMP
     
     // Initialize timing variables
     double overall_start, overall_end, work_start, work_end, runTime, workTime;
@@ -212,10 +215,15 @@ void mpi_apply_stencil(double *input, double *output, int rows, int cols, int ra
     int start_idx = rank * elements_per_proc;
     int end_idx = (rank == size - 1) ? (rows * cols) : (start_idx + elements_per_proc);
 
+    // Define private variables
+    int idx, i, j;
+    double NW, N, NE, E, SE, S, SW, W, C;
+
+    #pragma omp parallel for default(none) shared(input, output, rows, cols, start_idx, end_idx) private(idx, i, j, NW, N, NE, E, SE, S, SW, W, C)
     // Process assigned elements
-    for (int idx = start_idx; idx < end_idx; idx++) {
-        int i = idx / cols;
-        int j = idx % cols;
+    for (idx = start_idx; idx < end_idx; idx++) {
+        i = idx / cols;
+        j = idx % cols;
         
         // Don't update boundary cells
         if (i == 0 || i == rows - 1 || j == 0 || j == cols - 1) {
@@ -224,15 +232,15 @@ void mpi_apply_stencil(double *input, double *output, int rows, int cols, int ra
         }
         
         // 9-point stencil in the required order: NW+N+NE+E+SE+S+SW+W+C
-        double NW = input[(i-1) * cols + (j-1)];  // Northwest
-        double N  = input[(i-1) * cols + j];      // North
-        double NE = input[(i-1) * cols + (j+1)];  // Northeast
-        double E  = input[i * cols + (j+1)];      // East
-        double SE = input[(i+1) * cols + (j+1)];  // Southeast
-        double S  = input[(i+1) * cols + j];      // South
-        double SW = input[(i+1) * cols + (j-1)];  // Southwest
-        double W  = input[i * cols + (j-1)];      // West
-        double C  = input[i * cols + j];          // Center
+        NW = input[(i-1) * cols + (j-1)];  // Northwest
+        N  = input[(i-1) * cols + j];      // North
+        NE = input[(i-1) * cols + (j+1)];  // Northeast
+        E  = input[i * cols + (j+1)];      // East
+        SE = input[(i+1) * cols + (j+1)];  // Southeast
+        S  = input[(i+1) * cols + j];      // South
+        SW = input[(i+1) * cols + (j-1)];  // Southwest
+        W  = input[i * cols + (j-1)];      // West
+        C  = input[i * cols + j];          // Center
         
         // Calculate the average using the specified order
         output[idx] = (NW + N + NE + E + SE + S + SW + W + C) / 9.0;
