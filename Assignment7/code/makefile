@@ -3,8 +3,8 @@ CC = gcc
 MCC = mpicc # for MPI files
 CFLAGS = -Wall -g -pthread -fopenmp
 LDFLAGS = -lm
-TARGETS = make-2d print-2d stencil-2d stencil-2d-pth stencil-2d-omp stencil-2d-mpi stencil-2d-hybrid
-OBJS = make-2d.o print-2d.o stencil-2d.o stencil-2d-pth.o stencil-2d-omp.o stencil-2d-mpi.o stencil-2d-hybrid.o utilities.o
+TARGETS = make-2d print-2d stencil-2d stencil-2d-pth stencil-2d-omp stencil-2d-mpi stencil-2d-hybrid compare-outs
+OBJS = make-2d.o print-2d.o stencil-2d.o stencil-2d-pth.o stencil-2d-omp.o stencil-2d-mpi.o stencil-2d-hybrid.o compare-outs.o utilities.o 
 
 all: $(TARGETS)
 
@@ -35,6 +35,11 @@ stencil-2d-hybrid: stencil-2d-hybrid.o utilities.o
 
 stencil-2d-hybrid.o: stencil-2d-hybrid.c utilities.h
 	$(MCC) $(CFLAGS) -c $< -o $@
+
+# testing scripts
+
+compare-outs: compare-outs.o utilities.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 
 %.o: %.c utilities.h
