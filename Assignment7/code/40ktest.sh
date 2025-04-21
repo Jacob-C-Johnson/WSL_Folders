@@ -2,6 +2,7 @@
 #SBATCH --job-name="Stencil2D_Iteration_timer"
 #SBATCH --output="results/stencil2d_%j.out"
 #SBATCH --partition=compute
+#SBATCH --nodes=1              # Number of nodes
 #SBATCH --ntasks-per-node=1  # Number of tasks per node
 #SBATCH --cpus-per-task=4    # Number of CPUs per task
 #SBATCH --time=00:30:00
