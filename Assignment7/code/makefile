@@ -9,19 +9,19 @@ OBJS = make-2d.o print-2d.o stencil-2d.o stencil-2d-pth.o stencil-2d-omp.o stenc
 all: $(TARGETS)
 
 make-2d: make-2d.o utilities.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(MCC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 print-2d: print-2d.o utilities.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(MCC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 stencil-2d: stencil-2d.o utilities.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(MCC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 stencil-2d-pth: stencil-2d-pth.o utilities.o
-	$(CC) $(CFLAGS) -pthread -o $@ $^ $(LDFLAGS)
+	$(MCC) $(CFLAGS) -pthread -o $@ $^ $(LDFLAGS)
 
 stencil-2d-omp: stencil-2d-omp.o utilities.o
-	$(CC) $(CFLAGS) -fopenmp -o $@ $^ $(LDFLAGS)
+	$(MCC) $(CFLAGS) -fopenmp -o $@ $^ $(LDFLAGS)
 
 # specific compilation rules for mpi
 stencil-2d-mpi: stencil-2d-mpi.o utilities.c
