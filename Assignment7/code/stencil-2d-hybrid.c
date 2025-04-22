@@ -196,10 +196,10 @@ int main(int argc, char *argv[]) {
 
     // Only rank 0 prints timing info
     if (rank == 0) {
-        runTime = work_end - work_start;
+        runTime = overall_end - overall_start;
         printf("Total time: %lf seconds\n", runTime);
-
-        workTime = overall_end - overall_start;
+    
+        workTime = work_end - work_start;
         printf("Work time: %lf seconds\n", workTime);
     }
     

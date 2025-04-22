@@ -157,10 +157,10 @@ int main(int argc, char *argv[]) {
     // End overall timer
     GET_TIME(overall_end);
 
-    runTime = work_end - work_start;
+    runTime = overall_end - overall_start;
     printf("Total time: %lf seconds\n", runTime);
 
-    workTime = overall_end - overall_start;
+    workTime = work_end - work_start;
     printf("Work time: %lf seconds\n", workTime);
     
     return 0;
