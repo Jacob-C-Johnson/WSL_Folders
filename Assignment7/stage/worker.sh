@@ -2,7 +2,7 @@
 #SBATCH --job-name=Stencil2D
 #SBATCH --output=results/stencil2d_%j.out
 #SBATCH --partition=compute
-#SBATCH --time=00:30:00
+#SBATCH --time=12:30:00
 #SBATCH --mem=64G
 #SBATCH --nodes=2               # max you’ll ever need
 #SBATCH --ntasks-per-node=8     # max threads per node

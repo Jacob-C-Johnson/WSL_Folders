@@ -2,6 +2,8 @@ import os
 import struct
 import glob
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Use a non-interactive backend for saving images
 import matplotlib.pyplot as plt
 import imageio
 import re
