@@ -10,6 +10,7 @@
 #SBATCH --ntasks-per-node=1      # optional, but explicit
 
 module purge
-module load python/3.8-anaconda   
+module load cpu/0.15.4 gcc/10.2.0 python/3.8.5
+module load matplotlib/3.3.4 imageio/2.15.0   # adjust versions to what `module avail` shows 
 
 python3 heatmap.py
