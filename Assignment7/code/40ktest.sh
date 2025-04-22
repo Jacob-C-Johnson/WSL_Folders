@@ -12,5 +12,5 @@
 
 ./make-2d input_matrix.bin 40000 40000
 
-./stencil-2d 10 input_matrix.bin output_matrix.bin 0
+./stencil-2d 7 input_matrix.bin output_matrix.bin 0
 
