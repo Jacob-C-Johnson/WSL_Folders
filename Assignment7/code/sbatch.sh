@@ -2,7 +2,7 @@
 #SBATCH --job-name="Stencil2D_Experiments"
 #SBATCH --output="results/stencil2d_%j.out"
 #SBATCH --partition=compute
-#SBATCH --time=04:30:00
+#SBATCH --time=12:30:00
 #SBATCH --mem=64GB
 #SBATCH --account=ccu108
 #SBATCH --export=ALL
@@ -24,29 +24,12 @@ OUTPUT_FILE="output_matrix.bin"
 FRAMES_DIR="frames"
 RESULTS_DIR="results"
 T_COMPUTATION_FILE="computation_times.csv"
+t = 8 # Number of iterations
 
 # Ensure results directory exists
 mkdir -p $RESULTS_DIR
 
-# Step 1: Determine `t` for n=40k and p=1
-echo "Determining t for n=40k and p=1..."
-n=40000
-p=1
-t=100  # Start with an initial guess for t
-while true; do
-    ./make-2d $INPUT_FILE $n $n
-    start_time=$(date +%s)
-    ./stencil-2d $t $INPUT_FILE $OUTPUT_FILE 0
-    end_time=$(date +%s)
-    elapsed=$((end_time - start_time))
-    if [ $elapsed -ge 240 ]; then  # 4 minutes = 240 seconds
-        break
-    fi
-    t=$((t + 50))  # Increment t and try again
-done
-echo "Determined t=$t for n=40k and p=1."
-
-# Step 2: Run experiments for all combinations of n and p
+# Step 1: Run experiments for all combinations of n and p
 echo "Running experiments..."
 for impl in "${IMPLEMENTATIONS[@]}"; do
     for n in "${MATRIX_SIZES[@]}"; do
