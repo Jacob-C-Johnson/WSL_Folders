@@ -47,11 +47,15 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
 
       echo "$impl,$n,$p,$t,$T_OVR,$T_CMP,$T_OTH" >> $RESULTS
     done
-  done
 
-  # optional: build one GIF per n
-  python3 heatmap.py --size $n --frames-dir frames \
-                     --output results/animation_${n}.gif
+    if [[ "$impl" == "stencil-2d" ]]; then
+    DEST=results/frames_${n}
+    mkdir -p "$DEST"
+    mv frames/* "$DEST"/
+    echo "→ moved $(ls -1 "$DEST" | wc -l) frames to $DEST"
+    fi
+
+  done
 done
 
 echo "Done. All results in $RESULTS"
