@@ -43,9 +43,7 @@ RESULTS=results/computation_times.csv
 t=8   # your tuned iteration count
 
 # prepare
-make clean
-make
-
+rm -rf frames/*
 mkdir -p results
 echo "impl,n,p,t,overall,computation,other" > $RESULTS
 
