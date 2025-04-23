@@ -19,7 +19,7 @@ module load slurm/22.05.8
 module load gpu/0.17.3b
 module load gcc/10.2.0/npcyll4 
 module load openmpi/4.1.3
-module load mpip/3.4.1
+module load mpip/3.5
 
 # Parameters
 #MATRIX_SIZES=(5000 10000 20000 40000)
