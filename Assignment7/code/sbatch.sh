@@ -1,12 +1,14 @@
 #!/bin/bash
 #SBATCH --job-name=Stencil2D_All
 #SBATCH --output=results/stencil2d_all_%j.out
+#SBATCH --mail-user=jjohns7@coastal.edu
+#SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
-#SBATCH --time=12:30:00
+#SBATCH --time=00:30:00
 #SBATCH --mem=128GB
-#SBATCH --nodes=2               # max you’ll ever need
-#SBATCH --ntasks-per-node=8     # max threads/node
-#SBATCH --cpus-per-task=16
+#SBATCH --nodes=1               # max you’ll ever need
+#SBATCH --ntasks-per-node=1     # max threads/node
+#SBATCH --cpus-per-task=1
 #SBATCH --account=ccu108
 #SBATCH --export=ALL
 
@@ -20,6 +22,13 @@ module load mpip/3.4.1
 # Parameters
 #MATRIX_SIZES=(5000 10000 20000 40000)
 #THREAD_COUNTS=(1 2 4 8 16)
+# --time=12:30:00
+# --partition=compute
+# --time=12:30:00
+# --mem=128GB
+# --nodes=2               # max you’ll ever need
+# --ntasks-per-node=8     # max threads/node
+# --cpus-per-task=16
 
 MATRIX_SIZES=(5000)
 THREAD_COUNTS=(1)
