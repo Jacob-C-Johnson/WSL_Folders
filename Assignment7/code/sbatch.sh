@@ -4,7 +4,7 @@
 #SBATCH --mail-user=jjohns7@coastal.edu
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
-#SBATCH --time=00:30:00
+#SBATCH --time=01:00:00
 #SBATCH --mem=128GB
 #SBATCH --nodes=1               # max you’ll ever need
 #SBATCH --ntasks-per-node=1     # max threads/node
@@ -34,13 +34,13 @@ module load mpip/3.5
 # --ntasks-per-node=8     # max threads/node
 # --cpus-per-task=16
 
-MATRIX_SIZES=(5000)
+MATRIX_SIZES=(40000)
 THREAD_COUNTS=(1)
-IMPLEMENTATIONS=(stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
+IMPLEMENTATIONS=(stencil-2d) #stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
 RESULTS=results/computation_times.csv
-t=8   # your tuned iteration count
+t=20   # your tuned iteration count
 
 # prepare
 rm -rf frames/*
@@ -56,10 +56,10 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       if [[ "$impl" == "stencil-2d" ]]; then
         # stencil-2d does not take the threads parameter
         srun -n1 ./$impl $t $INPUT $OUTPUT 0
-      elif [[ "$impl" == "stencil-2d-mpi" || "$impl" == "stencil-2d-hybrid" ]]; then
-        srun -n$p ./$impl $t $INPUT $OUTPUT 0 $p
-      else
-        srun -n1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
+      # elif [[ "$impl" == "stencil-2d-mpi" || "$impl" == "stencil-2d-hybrid" ]]; then
+      #   srun -n$p ./$impl $t $INPUT $OUTPUT 0 $p
+      # else
+      #   srun -n1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
       fi
 
       # Extract timing information for the current run
