@@ -40,7 +40,7 @@ IMPLEMENTATIONS=(stencil-2d) #stencil-2d-omp stencil-2d-pth stencil-2d-mpi stenc
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
 RESULTS=results/computation_times.csv
-t=20   # your tuned iteration count
+t=8  # number of iterations
 
 # prepare
 rm -rf frames/*
@@ -49,17 +49,21 @@ echo "impl,n,p,t,overall,computation,other" > $RESULTS
 
 for impl in "${IMPLEMENTATIONS[@]}"; do
   for n in "${MATRIX_SIZES[@]}"; do
+      # run the serial version only the number of matrix sizes
+      if [[ "$impl" == "stencil-2d" ]]; then
+        srun --nodes=1 --ntasks=1 --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0
+      fi
+    
     for p in "${THREAD_COUNTS[@]}"; do
       echo "=== $impl, n=$n, p=$p, t=$t ==="
       ./make-2d $INPUT $n $n
 
-      if [[ "$impl" == "stencil-2d" ]]; then
-        # stencil-2d does not take the threads parameter
-        srun -n1 ./$impl $t $INPUT $OUTPUT 0
-      # elif [[ "$impl" == "stencil-2d-mpi" || "$impl" == "stencil-2d-hybrid" ]]; then
-      #   srun -n$p ./$impl $t $INPUT $OUTPUT 0 $p
-      # else
-      #   srun -n1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
+      if [[ "$impl" == "stencil-2d-mpi" ]]; then
+        srun --nodes=1 --ntasks=$p --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0 $p
+      elif [[ "$impl" == "stencil-2d-hybrid" ]]; then
+        srun --nodes=1 --ntasks=$p --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
+      else
+        srun --nodes=1 --ntasks=1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
       fi
 
       # Extract timing information for the current run
