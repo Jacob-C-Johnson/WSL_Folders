@@ -61,15 +61,15 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       else
         srun -n1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
       fi
-
-      T_OVR=$(grep "Total time" results/stencil2d_all_${SLURM_JOB_ID}.out \
-               | awk '{print $3}')
-      T_CMP=$(grep "Work time"  results/stencil2d_all_${SLURM_JOB_ID}.out \
-               | awk '{print $3}')
-      T_OTH=$(echo "$T_OVR - $T_CMP" | bc)
-
-      echo "$impl,$n,$p,$t,$T_OVR,$T_CMP,$T_OTH" >> $RESULTS
     done
+
+    # Extract timing information after all runs for the current implementation
+    T_OVR=$(grep "Total time" results/stencil2d_all_${SLURM_JOB_ID}.out | awk '{print $3}')
+    T_CMP=$(grep "Work time" results/stencil2d_all_${SLURM_JOB_ID}.out | awk '{print $3}')
+    T_OTH=$(echo "$T_OVR - $T_CMP" | bc)
+
+    # Append results to the CSV file
+    echo "$impl,$n,$p,$t,$T_OVR,$T_CMP,$T_OTH" >> $RESULTS
 
     if [[ "$impl" == "stencil-2d" ]]; then
       DEST=results/frames_${n}
@@ -77,7 +77,6 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       mv frames/* "$DEST"/
       echo "→ moved $(ls -1 "$DEST" | wc -l) frames to $DEST"
     fi
-
   done
 done
 
