@@ -14,12 +14,14 @@
 
 set -e
 module purge
-module load cpu/0.17.3b 
+module load cpu/0.17.3b
 module load slurm/22.05.8
 module load gpu/0.17.3b
-module load gcc/10.2.0/ 
+module load gcc/10.2.0/
 module load openmpi/4.1.3
 module load mpip/3.5
+
+# Usage: /home/jjohnson7/WSL_Folders/Assignment7/code/./stencil-2d <num_iterations> <input_file> <output_file> [verbosity]
 
 # Parameters
 #MATRIX_SIZES=(5000 10000 20000 40000)
@@ -50,7 +52,10 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       echo "=== $impl, n=$n, p=$p, t=$t ==="
       ./make-2d $INPUT $n $n
 
-      if [[ "$impl" == "stencil-2d-mpi" || "$impl" == "stencil-2d-hybrid" ]]; then
+      if [[ "$impl" == "stencil-2d" ]]; then
+        # stencil-2d does not take the threads parameter
+        srun -n1 ./$impl $t $INPUT $OUTPUT 0
+      elif [[ "$impl" == "stencil-2d-mpi" || "$impl" == "stencil-2d-hybrid" ]]; then
         srun -n$p ./$impl $t $INPUT $OUTPUT 0 $p
       else
         srun -n1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
@@ -66,10 +71,10 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
     done
 
     if [[ "$impl" == "stencil-2d" ]]; then
-    DEST=results/frames_${n}
-    mkdir -p "$DEST"
-    mv frames/* "$DEST"/
-    echo "→ moved $(ls -1 "$DEST" | wc -l) frames to $DEST"
+      DEST=results/frames_${n}
+      mkdir -p "$DEST"
+      mv frames/* "$DEST"/
+      echo "→ moved $(ls -1 "$DEST" | wc -l) frames to $DEST"
     fi
 
   done
