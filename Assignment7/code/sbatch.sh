@@ -15,8 +15,11 @@ module purge
 module load gcc/10.2.0 openmpi/4.1.3
 
 # Parameters
-MATRIX_SIZES=(5000 10000 20000 40000)
-THREAD_COUNTS=(1 2 4 8 16)
+#MATRIX_SIZES=(5000 10000 20000 40000)
+#THREAD_COUNTS=(1 2 4 8 16)
+
+MATRIX_SIZES=(5000)
+THREAD_COUNTS=(1)
 IMPLEMENTATIONS=(stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
