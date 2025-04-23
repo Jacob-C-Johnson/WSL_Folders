@@ -12,7 +12,10 @@
 
 set -e
 module purge
-module load gcc/10.2.0 openmpi/4.1.3
+module load gcc/10.2.0 
+module load cpu/0.15.4 
+module load openmpi/4.1.3
+module load mpip/3.4.1
 
 # Parameters
 #MATRIX_SIZES=(5000 10000 20000 40000)
