@@ -17,7 +17,7 @@ module purge
 module load cpu/0.17.3b 
 module load slurm/22.05.8
 module load gpu/0.17.3b
-module load gcc/10.2.0/npcyll4 
+module load gcc/10.2.0/ 
 module load openmpi/4.1.3
 module load mpip/3.5
 
