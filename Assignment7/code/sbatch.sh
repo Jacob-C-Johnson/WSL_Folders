@@ -6,8 +6,8 @@
 #SBATCH --partition=compute
 #SBATCH --time=12:30:00
 #SBATCH --mem=128GB
-#SBATCH --nodes=1               # max you’ll ever need
-#SBATCH --ntasks-per-node=16     # max threads/node
+#SBATCH --nodes=2               # max you’ll ever need
+#SBATCH --ntasks-per-node=8     # max threads/node
 #SBATCH --cpus-per-task=16
 #SBATCH --account=ccu108
 #SBATCH --export=ALL
