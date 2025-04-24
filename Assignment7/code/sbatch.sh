@@ -4,11 +4,11 @@
 #SBATCH --mail-user=jjohns7@coastal.edu
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
-#SBATCH --time=01:00:00
+#SBATCH --time=12:30:00
 #SBATCH --mem=128GB
 #SBATCH --nodes=1               # max you’ll ever need
-#SBATCH --ntasks-per-node=1     # max threads/node
-#SBATCH --cpus-per-task=1
+#SBATCH --ntasks-per-node=16     # max threads/node
+#SBATCH --cpus-per-task=16
 #SBATCH --account=ccu108
 #SBATCH --export=ALL
 
@@ -21,8 +21,6 @@ module load gcc/10.2.0/
 module load openmpi/4.1.3
 module load mpip/3.5
 
-# Usage: /home/jjohnson7/WSL_Folders/Assignment7/code/./stencil-2d <num_iterations> <input_file> <output_file> [verbosity]
-
 # Parameters
 #MATRIX_SIZES=(5000 10000 20000 40000)
 #THREAD_COUNTS=(1 2 4 8 16)
@@ -34,9 +32,9 @@ module load mpip/3.5
 # --ntasks-per-node=8     # max threads/node
 # --cpus-per-task=16
 
-MATRIX_SIZES=(40000)
-THREAD_COUNTS=(1)
-IMPLEMENTATIONS=(stencil-2d) #stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
+MATRIX_SIZES=(5000 10000 20000 40000)
+THREAD_COUNTS=(1 2 4 8 16)
+IMPLEMENTATIONS=(stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
 RESULTS=results/computation_times.csv
@@ -49,6 +47,9 @@ echo "impl,n,p,t,overall,computation,other" > $RESULTS
 
 for impl in "${IMPLEMENTATIONS[@]}"; do
   for n in "${MATRIX_SIZES[@]}"; do
+      # make the input matrix
+      ./make-2d $INPUT $n $n
+      
       # run the serial version only the number of matrix sizes
       if [[ "$impl" == "stencil-2d" ]]; then
         srun --nodes=1 --ntasks=1 --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0
@@ -56,12 +57,11 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
     
     for p in "${THREAD_COUNTS[@]}"; do
       echo "=== $impl, n=$n, p=$p, t=$t ==="
-      ./make-2d $INPUT $n $n
 
       if [[ "$impl" == "stencil-2d-mpi" ]]; then
         srun --nodes=1 --ntasks=$p --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0 $p
       elif [[ "$impl" == "stencil-2d-hybrid" ]]; then
-        srun --nodes=1 --ntasks=$p --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
+        srun --nodes=1 --ntasks=$p --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0 $p
       else
         srun --nodes=1 --ntasks=1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
       fi

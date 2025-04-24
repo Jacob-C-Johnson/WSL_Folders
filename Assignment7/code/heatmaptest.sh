@@ -10,7 +10,7 @@
 #SBATCH --ntasks-per-node=1
 
 module purge
-module load cpu/0.15.4 gcc/10.2.0 python/3.8.5
+module load cpu/0.15.4 gcc/10.2.0 python3
 
 # Create venv on first run (will live under ./env)
 if [ ! -d env ]; then
