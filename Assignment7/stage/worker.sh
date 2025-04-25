@@ -26,5 +26,4 @@ fi
 T_OVERALL=$(grep "Total time" results/stencil2d_${SLURM_JOB_ID}.out | awk '{print $3}')
 T_COMP=$(grep "Work time"  results/stencil2d_${SLURM_JOB_ID}.out | awk '{print $3}')
 T_OTHER=$(echo "$T_OVERALL - $T_COMP" | bc)
-echo "$impl,$n,$p,$t,$T_OVERALL,$T_COMP,$T_OTHER" \
-  >> results/computation_times.csv
+echo "$impl,$n,$p,$t,$T_OVR,$T_CMP,$T_OTH" >> $RESULTS
