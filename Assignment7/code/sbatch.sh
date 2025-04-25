@@ -58,6 +58,11 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
     for p in "${THREAD_COUNTS[@]}"; do
       echo "=== $impl, n=$n, p=$p, t=$t ==="
 
+        if [[ "$impl" == "stencil-2d" ]]; then
+          # Already run above; skip in thread-count loop
+          continue
+      fi
+
       if [[ "$impl" == "stencil-2d-mpi" ]]; then
         mpiexec -n $p ./$impl $t $INPUT $OUTPUT 0 $p
 
