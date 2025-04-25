@@ -13,7 +13,13 @@
 #SBATCH --export=ALL
 
 set -e
-module purge; module load gcc/10.2.0 openmpi/4.1.3
+module purge
+module load cpu/0.17.3b
+module load slurm/22.05.8
+module load gpu/0.17.3b
+module load gcc/10.2.0/
+module load openmpi/4.1.3
+module load mpip/3.5
 
 impl=$IMPL; n=$N; p=$P; t=$T
 INPUT=input_matrix.bin
