@@ -21,12 +21,14 @@ module load gcc/10.2.0/
 module load openmpi/4.1.3
 module load mpip/3.5
 
-impl=$IMPL; n=$N; p=$P; t=$T
-INPUT=input_matrix.bin
-OUTPUT=output_matrix.bin
-RESULTS=results/computation_times.csv
-
+# Prepare
 mkdir -p results
+mkdir -p matrices
+
+impl=$IMPL; n=$N; p=$P; t=$T
+INPUT=matrices/input_${impl}_${n}_${p}.bin
+OUTPUT=matrices/output_${impl}_${n}_${p}.bin
+RESULTS=results/computation_times.csv
 
 echo "Running $impl n=$n p=$p t=$t"
 ./make-2d $INPUT $n $n
