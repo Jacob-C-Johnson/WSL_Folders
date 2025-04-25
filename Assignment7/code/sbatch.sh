@@ -4,7 +4,7 @@
 #SBATCH --mail-user=jjohns7@coastal.edu
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
-#SBATCH --time=12:30:00
+#SBATCH --time=00:30:00
 #SBATCH --mem=128GB
 #SBATCH --nodes=2               # max you’ll ever need
 #SBATCH --ntasks-per-node=8     # max threads/node
@@ -32,8 +32,8 @@ module load mpip/3.5
 # --ntasks-per-node=8     # max threads/node
 # --cpus-per-task=16
 
-MATRIX_SIZES=(5000 10000 20000 40000)
-THREAD_COUNTS=(1 2 4 8 16)
+MATRIX_SIZES=(5000)
+THREAD_COUNTS=(1)
 IMPLEMENTATIONS=(stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
@@ -52,18 +52,39 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       
       # run the serial version only the number of matrix sizes
       if [[ "$impl" == "stencil-2d" ]]; then
-        srun --nodes=1 --ntasks=1 --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0
+        ./stencil-2d $t $INPUT $OUTPUT 0
       fi
     
     for p in "${THREAD_COUNTS[@]}"; do
       echo "=== $impl, n=$n, p=$p, t=$t ==="
 
       if [[ "$impl" == "stencil-2d-mpi" ]]; then
-        srun --nodes=1 --ntasks=$p --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0 $p
+        mpiexec -n $p ./$impl $t $INPUT $OUTPUT 0 $p
+
       elif [[ "$impl" == "stencil-2d-hybrid" ]]; then
-        srun --nodes=1 --ntasks=$p --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0 $p
+        # Choose MPI ranks and OpenMP threads
+        if [[ $p -eq 1 ]]; then
+          ntasks=1; threads=1
+        elif [[ $p -eq 2 ]]; then
+          ntasks=1; threads=2
+        elif [[ $p -eq 4 ]]; then
+          ntasks=2; threads=2
+        elif [[ $p -eq 8 ]]; then
+          ntasks=2; threads=4
+        elif [[ $p -eq 16 ]]; then
+          ntasks=4; threads=4
+        else
+          echo "Unsupported thread count $p for hybrid. Skipping."
+          continue
+        fi
+
+        export OMP_NUM_THREADS=$threads
+        mpiexec -n $ntasks ./$impl $t $INPUT $OUTPUT 0 $threads
+
       else
-        srun --nodes=1 --ntasks=1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
+        # For OpenMP or Pthread (not MPI)
+        export OMP_NUM_THREADS=$p
+        ./$impl $t $INPUT $OUTPUT 0 $p
       fi
 
       # Extract timing information for the current run
