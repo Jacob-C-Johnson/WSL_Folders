@@ -52,16 +52,24 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       
       # run the serial version only once
       if [[ "$impl" == "stencil-2d" ]]; then
+        echo "=== $impl, n=$n, p=$p, t=$t ==="
         ./stencil-2d $t $INPUT $OUTPUT 0
+
+        # Extract timing information for the current run
+        T_OVR=$(grep "Total time" results/stencil2d_all_${SLURM_JOB_ID}.out | tail -n1 | awk '{print $3}' | tr -d '\n')
+        T_CMP=$(grep "Work time" results/stencil2d_all_${SLURM_JOB_ID}.out | tail -n1 | awk '{print $3}' | tr -d '\n')
+        T_OTH=$(echo "$T_OVR - $T_CMP" | bc | tr -d '\n')
+
+        # Append results to the CSV file
+        echo "$impl,$n,$p,$t,$T_OVR,$T_CMP,$T_OTH" >> $RESULTS
       fi
     
     for p in "${THREAD_COUNTS[@]}"; do
-      echo "=== $impl, n=$n, p=$p, t=$t ==="
-
       if [[ "$impl" == "stencil-2d" ]]; then
         # Already run above; skip in thread-count loop
         continue
       fi
+      echo "=== $impl, n=$n, p=$p, t=$t ==="
 
       if [[ "$impl" == "stencil-2d-mpi" ]]; then
         # MPI only — 1 CPU per process
