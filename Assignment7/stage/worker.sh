@@ -1,11 +1,15 @@
 #!/bin/bash
-#SBATCH --job-name=Stencil2D
-#SBATCH --output=results/stencil2d_%j.out
+#SBATCH --job-name=Stencil2D_All
+#SBATCH --output=results/stencil2d_all_%j.out
+#SBATCH --mail-user=jjohns7@coastal.edu
+#SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
-#SBATCH --time=12:30:00
-#SBATCH --mem=64G
-#SBATCH --nodes=2               # max you’ll ever need
-#SBATCH --ntasks-per-node=8     # max threads per node
+#SBATCH --time=00:25:00
+#SBATCH --mem=128GB
+#SBATCH --nodes=1               # max you’ll ever need
+#SBATCH --ntasks-per-node=4     # max threads/node
+#SBATCH --cpus-per-task=8
+#SBATCH --account=ccu108
 #SBATCH --export=ALL
 
 set -e
@@ -23,7 +27,7 @@ else
   ./$impl $t input_matrix.bin output_matrix.bin 0 $p
 fi
 
-T_OVERALL=$(grep "Total time" results/stencil2d_${SLURM_JOB_ID}.out | awk '{print $3}')
-T_COMP=$(grep "Work time"  results/stencil2d_${SLURM_JOB_ID}.out | awk '{print $3}')
-T_OTHER=$(echo "$T_OVERALL - $T_COMP" | bc)
+T_OVR=$(grep "Total time" results/stencil2d_all_${SLURM_JOB_ID}.out | tail -n1 | awk '{print $3}' | tr -d '\n')
+T_CMP=$(grep "Work time" results/stencil2d_all_${SLURM_JOB_ID}.out | tail -n1 | awk '{print $3}' | tr -d '\n')
+T_OTH=$(echo "$T_OVR - $T_CMP" | bc | tr -d '\n')
 echo "$impl,$n,$p,$t,$T_OVR,$T_CMP,$T_OTH" >> $RESULTS
