@@ -50,7 +50,7 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
       # make the input matrix
       ./make-2d $INPUT $n $n
       
-      # run the serial version only the number of matrix sizes
+      # run the serial version only once
       if [[ "$impl" == "stencil-2d" ]]; then
         ./stencil-2d $t $INPUT $OUTPUT 0
       fi
@@ -58,16 +58,17 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
     for p in "${THREAD_COUNTS[@]}"; do
       echo "=== $impl, n=$n, p=$p, t=$t ==="
 
-        if [[ "$impl" == "stencil-2d" ]]; then
-          # Already run above; skip in thread-count loop
-          continue
-        fi
+      if [[ "$impl" == "stencil-2d" ]]; then
+        # Already run above; skip in thread-count loop
+        continue
+      fi
 
       if [[ "$impl" == "stencil-2d-mpi" ]]; then
-        mpiexec -n $p ./$impl $t $INPUT $OUTPUT 0 $p
+        # MPI only — 1 CPU per process
+        srun --ntasks=$p --cpus-per-task=1 ./$impl $t $INPUT $OUTPUT 0 $p
 
       elif [[ "$impl" == "stencil-2d-hybrid" ]]; then
-        # Choose MPI ranks and OpenMP threads
+        # MPI + OpenMP hybrid
         if [[ $p -eq 1 ]]; then
           ntasks=1; threads=1
         elif [[ $p -eq 2 ]]; then
@@ -84,12 +85,12 @@ for impl in "${IMPLEMENTATIONS[@]}"; do
         fi
 
         export OMP_NUM_THREADS=$threads
-        mpiexec -n $ntasks ./$impl $t $INPUT $OUTPUT 0 $threads
+        srun --ntasks=$ntasks --cpus-per-task=$threads ./$impl $t $INPUT $OUTPUT 0 $threads
 
       else
-        # For OpenMP or Pthread (not MPI)
+        # OpenMP-only or Pthread version
         export OMP_NUM_THREADS=$p
-        ./$impl $t $INPUT $OUTPUT 0 $p
+        srun --ntasks=1 --cpus-per-task=$p ./$impl $t $INPUT $OUTPUT 0 $p
       fi
 
       # Extract timing information for the current run
