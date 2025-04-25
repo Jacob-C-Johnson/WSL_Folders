@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-MATRIX_SIZES=(5000)
+MATRIX_SIZES=(50)
 THREAD_COUNTS=(1)
 IMPLEMENTATIONS=( stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid )
 t=8 # Number of iterations
