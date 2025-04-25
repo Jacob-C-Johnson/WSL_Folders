@@ -6,9 +6,9 @@
 #SBATCH --partition=compute
 #SBATCH --time=00:30:00
 #SBATCH --mem=128GB
-#SBATCH --nodes=2               # max you’ll ever need
-#SBATCH --ntasks-per-node=8     # max threads/node
-#SBATCH --cpus-per-task=16
+#SBATCH --nodes=1               # max you’ll ever need
+#SBATCH --ntasks-per-node=4     # max threads/node
+#SBATCH --cpus-per-task=8
 #SBATCH --account=ccu108
 #SBATCH --export=ALL
 
@@ -32,7 +32,7 @@ module load mpip/3.5
 # --ntasks-per-node=8     # max threads/node
 # --cpus-per-task=16
 
-MATRIX_SIZES=(5000)
+MATRIX_SIZES=(50)
 THREAD_COUNTS=(1)
 IMPLEMENTATIONS=(stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
