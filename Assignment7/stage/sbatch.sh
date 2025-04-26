@@ -31,10 +31,11 @@ module load mpip/3.5
 # --nodes=2               # max you’ll ever need
 # --ntasks-per-node=8     # max threads/node
 # --cpus-per-task=16
+# stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid
 
-MATRIX_SIZES=(50)
+MATRIX_SIZES=(5000)
 THREAD_COUNTS=(1)
-IMPLEMENTATIONS=(stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid)
+IMPLEMENTATIONS=(stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
 RESULTS=results/computation_times.csv
