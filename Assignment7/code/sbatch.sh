@@ -35,7 +35,7 @@ module load mpip/3.5
 
 MATRIX_SIZES=(5000 10000 20000 40000)
 THREAD_COUNTS=(1 2 4 8 16)
-IMPLEMENTATIONS=(stencil-2d-mpi stencil-2d-hybrid)
+IMPLEMENTATIONS=(stencil-2d-pth)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
 RESULTS=results/computation_times.csv
