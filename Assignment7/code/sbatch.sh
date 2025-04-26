@@ -4,7 +4,7 @@
 #SBATCH --mail-user=jjohns7@coastal.edu
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
-#SBATCH --time=00:30:00
+#SBATCH --time=01:30:00
 #SBATCH --mem=128GB
 #SBATCH --nodes=1               # max you’ll ever need
 #SBATCH --ntasks-per-node=4     # max threads/node
@@ -33,8 +33,8 @@ module load mpip/3.5
 # --cpus-per-task=16
 # stencil-2d stencil-2d-omp stencil-2d-pth stencil-2d-mpi stencil-2d-hybrid
 
-MATRIX_SIZES=(5000)
-THREAD_COUNTS=(1)
+MATRIX_SIZES=(5000 10000 20000 40000)
+THREAD_COUNTS=(1 2 4 8 16)
 IMPLEMENTATIONS=(stencil-2d-mpi stencil-2d-hybrid)
 INPUT=input_matrix.bin
 OUTPUT=output_matrix.bin
