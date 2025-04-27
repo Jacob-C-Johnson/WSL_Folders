@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>  // Add this for mkdir
-#include <mpi.h> // Include MPI header
+#include <sys/stat.h>
+#include <mpi.h>
 #include "utilities.h"
 #include "timer.h"
 
+void mpi_apply_stencil_local(double *input, double *output, int local_rows, int cols, int rank, int size);
+
 int main(int argc, char *argv[]) {
-    // Initialize MPI first
     int rank, size;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    
-    // Parse command line arguments
+
     if (argc != 6) {
         if (rank == 0) {
             fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> <verbosity> <num_processors>\n", argv[0]);
@@ -28,238 +28,175 @@ int main(int argc, char *argv[]) {
     int verbosity = atoi(argv[4]);
     int num_processors = atoi(argv[5]);
 
-    // Check if required arguments are provided
-    if (num_iterations <= 0 || input_file == NULL || output_file == NULL) {
-        if (rank == 0) {
-            fprintf(stderr, "Error: Required arguments missing or invalid.\n");
-            fprintf(stderr, "Usage: %s <num_iterations> <input_file> <output_file> <verbosity> <num_processors>\n", argv[0]);
-        }
-        MPI_Finalize();
-        return 1;
-    }
-    
-    // Initialize timing variables
-    double overall_start, overall_end, work_start, work_end, runTime, workTime;
+    double overall_start, overall_end, work_start, work_end;
 
-    // Start overall timer
     GET_TIME(overall_start);
-    
-    double *matrix_a = NULL;
-    double *matrix_b = NULL;
+
     int rows = 0, cols = 0;
-    
-    // Only rank 0 reads the file
+    double *full_matrix = NULL;
+
     if (rank == 0) {
-        // Read input matrix
         FILE *file = fopen(input_file, "rb");
-        if (file == NULL) {
+        if (!file) {
             perror("Error opening input file");
             MPI_Abort(MPI_COMM_WORLD, 1);
-            return 1;
         }
-        
-        // Read dimensions
         fread(&rows, sizeof(int), 1, file);
         fread(&cols, sizeof(int), 1, file);
-        
+
         if (verbosity >= 1) {
             printf("Input matrix dimensions: %d x %d\n", rows, cols);
             printf("Number of iterations: %d\n", num_iterations);
         }
-        
-        // Allocate memory for matrices
-        matrix_a = (double *)malloc(rows * cols * sizeof(double));
-        matrix_b = (double *)malloc(rows * cols * sizeof(double));
-        if (matrix_a == NULL || matrix_b == NULL) {
-            fprintf(stderr, "Error: Memory allocation failed.\n");
+
+        full_matrix = malloc(rows * cols * sizeof(double));
+        if (!full_matrix) {
+            fprintf(stderr, "Error: Memory allocation failed\n");
             fclose(file);
             MPI_Abort(MPI_COMM_WORLD, 1);
-            return 1;
         }
-        
-        // Read the matrix data
-        fread(matrix_a, sizeof(double), rows * cols, file);
+
+        fread(full_matrix, sizeof(double), rows * cols, file);
         fclose(file);
-        
-        // Copy initial state to matrix_b
-        memcpy(matrix_b, matrix_a, rows * cols * sizeof(double));
-        
-        // Create frames directory if it doesn't exist
-        char frames_dir[256] = "frames";
-        mkdir(frames_dir, 0777);  // Create directory for animation frames
-        
-        // Save initial state
-        save_frame(matrix_a, rows, cols, 0, frames_dir);
-        
-        // Print initial state if verbosity is high
-        if (verbosity >= 2) {
-            printf("Initial state:\n");
-            print_matrix_from_mem(matrix_a, rows, cols, 0);
-        }
+
+        mkdir("frames", 0777);
+        save_frame(full_matrix, rows, cols, 0, "frames");
     }
-    
-    // Broadcast dimensions to all processes
+
     MPI_Bcast(&rows, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&cols, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    
-    // Other processes allocate memory now that they know dimensions
-    if (rank != 0) {
-        matrix_a = (double *)malloc(rows * cols * sizeof(double));
-        matrix_b = (double *)malloc(rows * cols * sizeof(double));
-        if (matrix_a == NULL || matrix_b == NULL) {
-            fprintf(stderr, "Error: Memory allocation failed on process %d.\n", rank);
-            MPI_Abort(MPI_COMM_WORLD, 1);
-            return 1;
+
+    int local_rows = rows / size;
+    if (rank == size - 1) {
+        local_rows += rows % size; // Last rank takes the remainder
+    }
+
+    double *local_a = malloc((local_rows + 2) * cols * sizeof(double)); // +2 for ghost rows
+    double *local_b = malloc((local_rows + 2) * cols * sizeof(double));
+    if (!local_a || !local_b) {
+        fprintf(stderr, "Rank %d: Error allocating local matrices\n", rank);
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    double *sendbuf = NULL;
+    int *sendcounts = NULL, *displs = NULL;
+
+    if (rank == 0) {
+        sendbuf = full_matrix;
+        sendcounts = malloc(size * sizeof(int));
+        displs = malloc(size * sizeof(int));
+
+        int disp = 0;
+        for (int i = 0; i < size; i++) {
+            int rows_i = rows / size;
+            if (i == size - 1) rows_i += rows % size;
+            sendcounts[i] = rows_i * cols;
+            displs[i] = disp;
+            disp += rows_i * cols;
         }
     }
-    
-    // Broadcast initial matrix data to all processes
-    MPI_Bcast(matrix_a, rows * cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(matrix_b, rows * cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    
-    // Start work timer
+
+    MPI_Scatterv(sendbuf, sendcounts, displs, MPI_DOUBLE,
+                 &local_a[cols], local_rows * cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    memcpy(&local_b[cols], &local_a[cols], local_rows * cols * sizeof(double));
+
     MPI_Barrier(MPI_COMM_WORLD);
     GET_TIME(work_start);
 
-    // Perform iterations
-    double *input, *output;
     for (int iter = 1; iter <= num_iterations; iter++) {
-        // Swap input and output matrices in each iteration
-        if (iter % 2 == 1) {
-            input = matrix_a;
-            output = matrix_b;
-        } else {
-            input = matrix_b;
-            output = matrix_a;
-        }
-        
-        // Apply stencil (heat transfer calculation) using MPI
-        mpi_apply_stencil(input, output, rows, cols, rank, size);
-        
-        // Only rank 0 saves frames and prints
-        if (rank == 0) {
-            // Save frame with improved error checking
-            if (save_frame(output, rows, cols, iter, "frames") != 0 && verbosity >= 1) {
-                printf("Warning: Could not save frame %d\n", iter);
-            }
-            
-            // Print state after iteration if verbosity is high
-            if (verbosity >= 2) {
-                printf("State after iteration %d:\n", iter);
-                print_matrix_from_mem(output, rows, cols, iter);
-            }
-        }
+        double *input = (iter % 2 == 1) ? local_a : local_b;
+        double *output = (iter % 2 == 1) ? local_b : local_a;
+
+        mpi_apply_stencil_local(input, output, local_rows, cols, rank, size);
+
+        MPI_Barrier(MPI_COMM_WORLD);
     }
-    
-    // End work timer
+
     MPI_Barrier(MPI_COMM_WORLD);
     GET_TIME(work_end);
-    
-    // Only rank 0 saves final result
-    if (rank == 0) {
-        // Final result is in the output of the last iteration
-        double *result = (num_iterations % 2 == 1) ? matrix_b : matrix_a;
-        
-        // Write output matrix
-        FILE *file = fopen(output_file, "wb");
-        if (file == NULL) {
-            perror("Error opening output file");
-            free(matrix_a);
-            free(matrix_b);
-            MPI_Abort(MPI_COMM_WORLD, 1);
-            return 1;
-        }
-        
-        // Write dimensions and data
-        fwrite(&rows, sizeof(int), 1, file);
-        fwrite(&cols, sizeof(int), 1, file);
-        fwrite(result, sizeof(double), rows * cols, file);
-        
-        fclose(file);
-        
-        if (verbosity >= 1) {
-            printf("Heat transfer simulation completed.\n");
-            printf("Output written to: %s\n", output_file);
-            printf("Animation frames saved in 'frames' directory\n");
-        }
-    }
-    
-    // Clean up
-    free(matrix_a);
-    free(matrix_b);
 
-    // End overall timer
+    MPI_Gatherv(&local_a[cols], local_rows * cols, MPI_DOUBLE,
+                full_matrix, sendcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        FILE *outfile = fopen(output_file, "wb");
+        if (!outfile) {
+            perror("Error opening output file");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+        fwrite(&rows, sizeof(int), 1, outfile);
+        fwrite(&cols, sizeof(int), 1, outfile);
+        fwrite(full_matrix, sizeof(double), rows * cols, outfile);
+        fclose(outfile);
+
+        printf("Heat transfer simulation completed.\n");
+        printf("Output written to: %s\n", output_file);
+    }
+
+    free(local_a);
+    free(local_b);
+    if (rank == 0) free(full_matrix);
+    
+    if (rank == 0) {
+        free(sendcounts);
+        free(displs);
+    }
+
     GET_TIME(overall_end);
 
-    // Only rank 0 prints timing info
     if (rank == 0) {
-        runTime = overall_end - overall_start;
-        printf("Total time: %lf seconds\n", runTime);
-    
-        workTime = work_end - work_start;
-        printf("Work time: %lf seconds\n", workTime);
+        printf("Total time: %lf seconds\n", overall_end - overall_start);
+        printf("Work time: %lf seconds\n", work_end - work_start);
     }
-    
-    // Finalize MPI
+
     MPI_Finalize();
     return 0;
 }
 
-// MPI version of apply_stencil
-void mpi_apply_stencil(double *input, double *output, int rows, int cols, int rank, int size) {
-    // Calculate work division for each process
-    int elements_per_proc = (rows * cols) / size;
-    int start_idx = rank * elements_per_proc;
-    int end_idx = (rank == size - 1) ? (rows * cols) : (start_idx + elements_per_proc);
+void mpi_apply_stencil_local(double *input, double *output, int local_rows, int cols, int rank, int size) {
+    MPI_Request requests[4];
+    int top = rank - 1;
+    int bottom = rank + 1;
 
-    // Process assigned elements
-    for (int idx = start_idx; idx < end_idx; idx++) {
-        int i = idx / cols;
-        int j = idx % cols;
-        
-        // Don't update boundary cells
-        if (i == 0 || i == rows - 1 || j == 0 || j == cols - 1) {
-            output[idx] = input[idx];
-            continue;
+    if (top >= 0) {
+        MPI_Irecv(input, cols, MPI_DOUBLE, top, 0, MPI_COMM_WORLD, &requests[0]);
+        MPI_Isend(&input[cols], cols, MPI_DOUBLE, top, 1, MPI_COMM_WORLD, &requests[1]);
+    }
+    if (bottom < size) {
+        MPI_Irecv(&input[(local_rows + 1) * cols], cols, MPI_DOUBLE, bottom, 1, MPI_COMM_WORLD, &requests[2]);
+        MPI_Isend(&input[local_rows * cols], cols, MPI_DOUBLE, bottom, 0, MPI_COMM_WORLD, &requests[3]);
+    }
+
+    if (top >= 0) MPI_Waitall(2, requests, MPI_STATUSES_IGNORE);
+    if (bottom < size) MPI_Waitall(2, requests + 2, MPI_STATUSES_IGNORE);
+
+    for (int i = 1; i <= local_rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (i == 1 && rank == 0) {
+                output[i * cols + j] = input[i * cols + j];
+                continue;
+            }
+            if (i == local_rows && rank == size - 1) {
+                output[i * cols + j] = input[i * cols + j];
+                continue;
+            }
+            if (j == 0 || j == cols - 1) {
+                output[i * cols + j] = input[i * cols + j];
+                continue;
+            }
+
+            double NW = input[(i-1) * cols + (j-1)];
+            double N  = input[(i-1) * cols + j];
+            double NE = input[(i-1) * cols + (j+1)];
+            double E  = input[i * cols + (j+1)];
+            double SE = input[(i+1) * cols + (j+1)];
+            double S  = input[(i+1) * cols + j];
+            double SW = input[(i+1) * cols + (j-1)];
+            double W  = input[i * cols + (j-1)];
+            double C  = input[i * cols + j];
+
+            output[i * cols + j] = (NW + N + NE + E + SE + S + SW + W + C) / 9.0;
         }
-        
-        // 9-point stencil in the required order: NW+N+NE+E+SE+S+SW+W+C
-        double NW = input[(i-1) * cols + (j-1)];  // Northwest
-        double N  = input[(i-1) * cols + j];      // North
-        double NE = input[(i-1) * cols + (j+1)];  // Northeast
-        double E  = input[i * cols + (j+1)];      // East
-        double SE = input[(i+1) * cols + (j+1)];  // Southeast
-        double S  = input[(i+1) * cols + j];      // South
-        double SW = input[(i+1) * cols + (j-1)];  // Southwest
-        double W  = input[i * cols + (j-1)];      // West
-        double C  = input[i * cols + j];          // Center
-        
-        // Calculate the average using the specified order
-        output[idx] = (NW + N + NE + E + SE + S + SW + W + C) / 9.0;
     }
-    
-    // Create a temporary buffer for gathering results
-    double *temp_output = NULL;
-    if (rank == 0) {
-        temp_output = (double *)malloc(rows * cols * sizeof(double));
-        if (temp_output == NULL) {
-            fprintf(stderr, "Error: Memory allocation failed in mpi_apply_stencil.\n");
-            MPI_Abort(MPI_COMM_WORLD, 1);
-            return;
-        }
-    }
-    
-    // Gather all results to rank 0
-    MPI_Gather(output + start_idx, elements_per_proc, MPI_DOUBLE,
-               temp_output, elements_per_proc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    
-    // Rank 0 distributes the complete solution to all processes
-    if (rank == 0) {
-        // Copy the gathered data to the output array
-        memcpy(output, temp_output, rows * cols * sizeof(double));
-        free(temp_output);
-    }
-    
-    // Broadcast the complete output to all processes
-    MPI_Bcast(output, rows * cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }

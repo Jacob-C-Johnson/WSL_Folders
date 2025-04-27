@@ -5,7 +5,7 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --partition=compute
 #SBATCH --time=02:30:00
-#SBATCH --mem=128GB
+#SBATCH --mem=200GB
 #SBATCH --nodes=1               # max you’ll ever need
 #SBATCH --ntasks-per-node=4     # max threads/node
 #SBATCH --cpus-per-task=8

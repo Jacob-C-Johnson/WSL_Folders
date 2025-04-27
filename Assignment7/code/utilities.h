@@ -20,3 +20,4 @@ void pth_apply_stencil(double *input, double *output, int rows, int cols); // Fu
 
 // MPI utilities
 void mpi_apply_stencil(double *input, double *output, int rows, int cols, int rank, int size);
+void mpi_apply_stencil_local(double *input, double *output, int local_rows, int cols, int rank, int size);
