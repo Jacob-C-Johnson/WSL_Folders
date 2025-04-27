@@ -6,8 +6,6 @@
 #include "utilities.h"
 #include "timer.h"
 
-void mpi_apply_stencil_local(double *input, double *output, int local_rows, int cols, int rank, int size);
-
 int main(int argc, char *argv[]) {
     int rank, size;
     MPI_Init(&argc, &argv);
