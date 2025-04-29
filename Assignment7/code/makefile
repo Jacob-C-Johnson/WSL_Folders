@@ -55,3 +55,44 @@ help:
 	@echo "  make          - Build all targets"
 	@echo "  make debug    - Build all targets with debugging symbols"
 	@echo "  make clean    - Remove all generated files"
+
+
+# Parameters for testing
+ITER = 100
+INPUT = input.txt
+VERB = 0
+NPROCS = 4
+
+test: stencil-2d stencil-2d-pth stencil-2d-omp stencil-2d-mpi stencil-2d-hybrid print-2d compare-outs
+    @echo "Running sequential version..."
+    ./stencil-2d $(ITER) $(INPUT) out-seq.txt $(VERB)
+    @echo "Output (Sequential):"
+    ./print-2d out-seq.txt
+
+    @echo "Running pthreads version..."
+    ./stencil-2d-pth $(ITER) $(INPUT) out-pth.txt $(VERB) $(NPROCS)
+    @echo "Output (Pthreads):"
+    ./print-2d out-pth.txt
+
+    @echo "Running OpenMP version..."
+    ./stencil-2d-omp $(ITER) $(INPUT) out-omp.txt $(VERB) $(NPROCS)
+    @echo "Output (OpenMP):"
+    ./print-2d out-omp.txt
+
+    @echo "Running MPI version..."
+    mpirun -np $(NPROCS) ./stencil-2d-mpi $(ITER) $(INPUT) out-mpi.txt $(VERB) $(NPROCS)
+    @echo "Output (MPI):"
+    ./print-2d out-mpi.txt
+
+    @echo "Running Hybrid version..."
+    mpirun -np $(NPROCS) ./stencil-2d-hybrid $(ITER) $(INPUT) out-hybrid.txt $(VERB) $(NPROCS)
+    @echo "Output (Hybrid):"
+    ./print-2d out-hybrid.txt
+
+    @echo "Comparing outputs with sequential baseline..."
+    @./compare-outs out-seq.txt out-pth.txt || echo "Mismatch: Pthreads"
+    @./compare-outs out-seq.txt out-omp.txt || echo "Mismatch: OpenMP"
+    @./compare-outs out-seq.txt out-mpi.txt || echo "Mismatch: MPI"
+    @./compare-outs out-seq.txt out-hybrid.txt || echo "Mismatch: Hybrid"
+
+    @echo "Test complete."
